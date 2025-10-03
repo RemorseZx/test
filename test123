@@ -4680,6 +4680,163 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("BRING ALL CARRY SYSTEM [NEW]", function()
+	local player = game.Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- Setup UI
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "BringPartGUI"
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Name = "Frame"
+frame.Size = UDim2.new(0, 300, 0, 270)
+frame.Position = UDim2.new(0.5, -150, 0.5, -135)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Text = "BRING ALL SYSTEM"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 16
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, 0, 0, 20)
+titleLabel.Position = UDim2.new(0, 0, 0, 5)
+titleLabel.Parent = frame
+
+-- Helper to create black button with white text
+local function createButton(name, text, yPos)
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Text = text
+	button.Font = Enum.Font.GothamBold
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.TextSize = 14
+	button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	button.BorderSizePixel = 0
+	button.Size = UDim2.new(0.9, 0, 0, 35)
+	button.Position = UDim2.new(0.05, 0, 0, yPos)
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+	button.Parent = frame
+	return button
+end
+
+-- Create Buttons
+local bringAllButton = createButton("BringAllButton", "BringAll", 35)
+local bringRandomButton = createButton("BringRandomButton", "BringRandom", 80)
+local crashServerButton = createButton("CrashServerButton", "CrashServer", 125)
+
+-- Username TextBox
+local textBox = Instance.new("TextBox")
+textBox.Name = "CommandBox"
+textBox.Text = ""
+textBox.PlaceholderText = "Enter Username"
+textBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+textBox.Font = Enum.Font.GothamBold
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.TextSize = 14
+textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+textBox.BorderSizePixel = 0
+textBox.Size = UDim2.new(0.9, 0, 0, 35)
+textBox.Position = UDim2.new(0.05, 0, 0, 170)
+textBox.ClearTextOnFocus = false
+textBox.Parent = frame
+Instance.new("UICorner", textBox).CornerRadius = UDim.new(0, 6)
+
+-- Execute Button
+local executeButton = createButton("ExecuteButton", "EXECUTE", 215)
+
+-- Carry variables
+local carryRemote = ReplicatedStorage:WaitForChild("CarryReplic"):WaitForChild("CarryRemotes"):WaitForChild("CarryRemote")
+local carryChoice = ReplicatedStorage:WaitForChild("CarryReplic"):WaitForChild("CarryChoices")["Couple Hug"]
+
+-- Command functions
+local commands = {}
+
+commands["BringAll"] = function()
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr ~= player then
+			carryRemote:FireServer({
+				cmd = "Carry",
+				carrychoicesss = carryChoice,
+				firstPlr = plr
+			})
+		end
+	end
+	wait(0.02)
+	carryRemote:FireServer({ cmd = "Declinecarry" })
+end
+
+commands["BringRandom"] = function()
+	local others = {}
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr ~= player then
+			table.insert(others, plr)
+		end
+	end
+	if #others > 0 then
+		local rand = others[math.random(1, #others)]
+		carryRemote:FireServer({
+			cmd = "Carry",
+			carrychoicesss = carryChoice,
+			firstPlr = rand
+		})
+		wait(0.02)
+		carryRemote:FireServer({ cmd = "Declinecarry" })
+	end
+end
+
+commands["CrashServer"] = function()
+	while true do
+		for _, plr in pairs(Players:GetPlayers()) do
+			if plr ~= player then
+				carryRemote:FireServer({
+					cmd = "Carry",
+					carrychoicesss = carryChoice,
+					firstPlr = plr
+				})
+			end
+		end
+		carryRemote:FireServer({ cmd = "Declinecarry" })
+		task.wait(5)
+	end
+end
+
+-- Button connections
+bringAllButton.MouseButton1Click:Connect(commands["BringAll"])
+bringRandomButton.MouseButton1Click:Connect(commands["BringRandom"])
+crashServerButton.MouseButton1Click:Connect(commands["CrashServer"])
+
+-- Execute button logic (EXACT NAME, uses "Dragging Carry ")
+executeButton.MouseButton1Click:Connect(function()
+	local inputText = textBox.Text:match("^%s*(.-)%s*$") -- trim
+	if inputText == "" then
+		warn("Please enter a username.")
+		return
+	end
+
+	local target = Players:FindFirstChild(inputText)
+	if target and target ~= player then
+		carryRemote:FireServer({
+			cmd = "Carry",
+			firstPlr = target,
+			carrychoicesss = ReplicatedStorage.CarryReplic.CarryChoices["Couple Hug"]
+		})
+	else
+		warn("Player '" .. inputText .. "' not found in server.")
+	end
+end)
+end)
+
 --// Function to Add Buttons to Main Menu
 local function addMainMenuButton(text, callback)
 	local panel = tabPanels["AIMBOT MENU"]
@@ -9622,4 +9779,5 @@ Submit.MouseButton1Click:Connect(function()
         end)
     end
 end)
+
 
