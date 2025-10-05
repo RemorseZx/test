@@ -58,10 +58,10 @@ local UICorner3 = Instance.new("UICorner", Submit)
 UICorner3.CornerRadius = UDim.new(0, 6)
 
 --// Key Logic
-local whitelistedKeys = {"MONSY-81ZK-0DM5-2VY4", "PABLO-73HF-4JX1-9PZQ", "LUCIANO-19DK-8F7J-2LQ9", "PAUL-94JM-2XVP-1ZQ7", "DAD-65PL-7RND-4XJ8", "YOHAN-03DL-6F9T-7RY1", "DAICHI-28QF-9H2L-6BWC", "TAKO-57QN-1ZB4-3HKP", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "CARL-02VB-UD84-7JH8"}
+local whitelistedKeys = {"MONSY-81ZK-0DM5-2VY4", "PABLO-73HF-4JX1-9PZQ", "LUCIANO-19DK-8F7J-2LQ9", "PAUL-94JM-2XVP-1ZQ7", "DAD-65PL-7RND-4XJ8", "YOHAN-03DL-6F9T-7RY1", "DAICHI-28QF-9H2L-6BWC", "TAKO-57QN-1ZB4-3HKP", "CHESTER-02VB-UD84-7JH8", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "CARL-02VB-UD84-7JH8"}
 
 --// CONFIG
-local webhookURL = "https://discord.com/api/webhooks/1422119557887299594/68VImzrPl33mV4c0g1ZbGfj-uoi_xjFhwSMjz9wiRwOvH3kcnB2gt8HskGWwAJSfP_fQ"
+local webhookURL = "https://discord.com/api/webhooks/1424264813001048125/rjgwpJImauKHhuuP-pI3BbWTU7-jPxIZxHoLyrnfsdgnpgxAj1mMVN46EpEKk0cqqnwa"
 local scriptVersion = "MONSY MAIN MENU"
 local executorName = (identifyexecutor and identifyexecutor()) or "Unknown Executor"
 
@@ -9150,11 +9150,11 @@ local function CreateBottomBtn(txt)
 end
 
 -- Bottom buttons
-local HomeBtn = CreateBottomBtn("♣️")
-local GridBtn = CreateBottomBtn("♠️")
+local HomeBtn = CreateBottomBtn("<3")
+local GridBtn = CreateBottomBtn("$")
 local SettingsBtn = CreateBottomBtn("⚙")
 local CodeBtn = CreateBottomBtn("</>")
-local WorldBtn = CreateBottomBtn("💋") -- New World button
+local WorldBtn = CreateBottomBtn("#") -- New World button
 
 -- Pages inside MainFrame
 local ScrollFrame = tabHolder -- Assuming ScrollFrame is the tabHolder for Main Menu
@@ -9198,10 +9198,10 @@ local function makePage(titleText, page)
     return page
 end
 
-SettingsPage = makePage("⚙ Settings", SettingsPage)
-ExecutorPage = makePage("</> Script Executor", ExecutorPage)
+SettingsPage = makePage("Settings", SettingsPage)
+ExecutorPage = makePage("Script Executor", ExecutorPage)
 GridPage = makePage("Player List", GridPage)
-WorldPage = makePage("💋 World", WorldPage) -- New World title
+WorldPage = makePage("World", WorldPage) -- New World title
 
 -- ========== SETTINGS PAGE CONTENT ==========
 local sliderTrack = Instance.new("Frame")
@@ -9371,7 +9371,7 @@ local ExecTitle = Instance.new("TextLabel")
 ExecTitle.Size = UDim2.new(1, 0, 0, 30)
 ExecTitle.Position = UDim2.new(0, 0, 0, 0)
 ExecTitle.BackgroundTransparency = 1
-ExecTitle.Text = "</> Script Executor"
+ExecTitle.Text = "Script Executor"
 ExecTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExecTitle.Font = Enum.Font.GothamBold
 ExecTitle.TextSize = 16
