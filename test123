@@ -4251,8 +4251,10 @@ Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
 -- List of items to buy (Silenced Pistol, Desert Eagle, AmmoBox)
 local items = {
     {"Unli Gamit", "Unli Gamit"},
-    {" ", " "},
-    {"", ""}
+    {"Oxy", "Oxy"},
+    {"Combo2", "Combo2"},
+    {"Combo3", "Combo3"},
+    {"Rod", "Rod"}
 }
 
 local selectedItem = nil
@@ -4320,14 +4322,29 @@ toggle.MouseButton1Click:Connect(function()
     isAutoBuying = not isAutoBuying
     toggle.Text = isAutoBuying and "Stop Auto Buy" or "Start Auto Buy"
     
-    while isAutoBuying do
+      while isAutoBuying do
         if selectedItem then
-            if selectedItem == "Unli Gamit" then
-                game:GetService("ReplicatedStorage").GiveAyuda:FireServer("Normal P", -0)
+            if selectedItem == "Silenced Pistol" then
+                game:GetService("ReplicatedStorage").GiveAyuda:FireServer("Silenced Pistol", -0)
                 print("Auto-buying Silenced Pistol")
+            elseif selectedItem == "Desert Eagle" then
+                game:GetService("ReplicatedStorage").GivePistol:FireServer("Oxy", -0)
+                print("Auto-buying Desert Eagle")
+             elseif selectedItem == "Desert Eagle" then
+                game:GetService("ReplicatedStorage").GiveCombo2:FireServer("Oxy", -0)
+                print("Auto-buying Desert Eagle")
+             elseif selectedItem == "Desert Eagle" then
+                game:GetService("ReplicatedStorage").GiveCombo3:FireServer("Oxy", -0)
+                print("Auto-buying Desert Eagle")
+             elseif selectedItem == "Desert Eagle" then
+                game:GetService("ReplicatedStorage").GivePistol:FireServer("Oxy", -0)
+                print("Auto-buying Desert Eagle")            
+            elseif selectedItem == "AmmoBox" then
+                game:GetService("ReplicatedStorage").AntiDupe:FireServer("Rod", -0)
+                print("Auto-buying AmmoBox")
             end
         end
-        task.wait(15)  -- Wait 1 second between purchases to prevent spam
+        task.wait(0.001)  -- Wait 1 second between purchases to prevent spam
     end
 end)
 
