@@ -663,7 +663,7 @@ local function runGUI()
     profileLabel.Font = Enum.Font.GothamBold
     profileLabel.TextSize = 14
     profileLabel.TextXAlignment = Enum.TextXAlignment.Left
-    profileLabel.Text = "xWxaWdw" .. LocalPlayer.Name
+    profileLabel.Text = "imissyoupo" .. LocalPlayer.Name
     profileLabel.Parent = profileFrame
 
     local statusLabel = Instance.new("TextLabel")
@@ -11064,6 +11064,7 @@ Submit.MouseButton1Click:Connect(function()
         end)
     end
 end)
+
 
 
 
