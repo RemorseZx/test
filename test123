@@ -593,8 +593,10 @@ local function runGUI()
         "SCRIPT MENU", 
         "CASH MENU", 
         "PLAYER MENU", 
-        "MONSY MENU", 
-        "TELEPORT MENU" 
+        "MONSY MENU",
+        "-TELEPORT-",
+        "DOMINION RP",
+        "dead" 
     }
     local tabPanels = {}
     local currentTab = nil
@@ -10143,6 +10145,327 @@ UIS.InputBegan:Connect(function(input, gpe)
 end)
 end)
 
+--// Function to Add Buttons to Main Menu
+local function addMainMenuButton(text, callback)
+	local panel = tabPanels["DOMINION RP"]
+	if not panel then return end
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -20, 0, 36)
+	button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.Font = Enum.Font.GothamSemibold
+	button.TextSize = 14
+	button.Text = text
+	button.AutoButtonColor = false
+	button.Parent = panel
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("HOSPITAL [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-1277.2003173828125, 3.3827743530273438, -1826.16162109375)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("GARAGE [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-790.076416015625, 3.355360984802246, 544.596923828125)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("CLOTHING [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-662.8965454101562, 3.3553061485290527, -1483.33349609375)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("GUNSHOP [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-428.618896484375, 6.015244483947754, -689.5989379882812)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("CAR DEALER [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-275.1256103515625, 3.2432126998901367, -690.48095703125)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("PHARMACY [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-916.824951171875, 3.3557791709899902, -2051.001708984375)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("FLEECA [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-921.0623779296875, 3.446157932281494, -168.2418212890625)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("POLICE DEPARTMENT [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-1821.7645263671875, 13.095586776733398, 286.4205627441406)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("7 ELEVEN [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-497.5661315917969, 3.3553056716918945, -1345.2403564453125)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("TRAPHOUSE MAIN DOOR [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-387.3024597167969, 44.56536102294922, 1706.3074951171875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("TRAPHOUSE 1ST POINT [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-273.4755554199219, 44.55963134765625, 1818.7889404296875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("TRAPHOUSE 2ND POINT [3KTG]", function()
+    -- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-495.6800231933594, 44.55963134765625, 1875.9793701171875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
 -- Particle Snow Effect inside main GUI
 local function createSnowParticle()
     local particle = Instance.new("ImageLabel")
@@ -11416,9 +11739,3 @@ Submit.MouseButton1Click:Connect(function()
         end)
     end
 end)
-
-
-
-
-
-
