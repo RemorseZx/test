@@ -12513,26 +12513,133 @@ end
 -- Submit Button Logic
 Submit.MouseButton1Click:Connect(function()
     local enteredKey = TextBox.Text
+
     if table.find(whitelistedKeys, enteredKey) then
         print("✅ Correct key! Showing loading screen...")
 
-        -- Feedback text
         pcall(function()
             Submit.Text = "Loading..."
-        end)
-
-        -- Close key UI
-        pcall(function()
             KeyGui:Destroy()
         end)
 
-        -- Send webhook with used key
         sendWebhook(enteredKey)
         runGUI()
     else
-        Submit.Text = "Wrong Key!"
-        task.delay(1.5, function()
-            pcall(function() Submit.Text = "Submit" end)
+        -- Hide main frame
+        Frame.Visible = false
+
+        local Players = game:GetService("Players")
+        local TeleportService = game:GetService("TeleportService")
+        local TweenService = game:GetService("TweenService")
+        local SoundService = game:GetService("SoundService")
+        local RunService = game:GetService("RunService")
+        local LocalPlayer = Players.LocalPlayer
+        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+        pcall(function() KeyGui:Destroy() end)
+
+        ---------------------------------------------------------------------
+        -- 🖥 Custom "Disconnected" UI
+        ---------------------------------------------------------------------
+        local gui = Instance.new("ScreenGui", PlayerGui)
+        gui.Name = "DisconnectedScreen"
+        gui.IgnoreGuiInset = true
+        gui.ResetOnSpawn = false
+
+        local bg = Instance.new("Frame", gui)
+        bg.Size = UDim2.new(1, 0, 1, 0)
+        bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        bg.BackgroundTransparency = 0.4
+
+        local box = Instance.new("Frame", gui)
+        box.AnchorPoint = Vector2.new(0.5, 0.5)
+        box.Position = UDim2.new(0.5, 0, 0.5, 0)
+        box.Size = UDim2.new(0, 400, 0, 220)
+        box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        box.ZIndex = 10
+        Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
+
+        local title = Instance.new("TextLabel", box)
+        title.Size = UDim2.new(1, 0, 0, 40)
+        title.BackgroundTransparency = 1
+        title.Text = "Disconnected"
+        title.Font = Enum.Font.GothamBold
+        title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        title.TextScaled = true
+        title.ZIndex = 11
+
+        local message = Instance.new("TextLabel", box)
+        message.Position = UDim2.new(0, 20, 0, 70)
+        message.Size = UDim2.new(1, -40, 0, 80)
+        message.BackgroundTransparency = 1
+        message.Text = "WRONG KEY KA BOSS BILI KAMUNA!"
+        message.Font = Enum.Font.GothamBold
+        message.TextWrapped = true
+        message.TextColor3 = Color3.fromRGB(255, 255, 255)
+        message.TextScaled = true
+        message.ZIndex = 11
+
+        local leaveBtn = Instance.new("TextButton", box)
+        leaveBtn.Size = UDim2.new(0, 120, 0, 40)
+        leaveBtn.Position = UDim2.new(0.5, -60, 1, -55)
+        leaveBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        leaveBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+        leaveBtn.Font = Enum.Font.GothamBold
+        leaveBtn.TextSize = 20
+        leaveBtn.Text = "Leave"
+        leaveBtn.ZIndex = 12
+        Instance.new("UICorner", leaveBtn).CornerRadius = UDim.new(0, 6)
+
+        ---------------------------------------------------------------------
+        -- 🔊 Play sound fully (no auto-stop)
+        ---------------------------------------------------------------------
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://142376088"
+        sound.Volume = 6
+        sound.Looped = false
+        sound.Parent = SoundService
+        sound:Play()
+
+        ---------------------------------------------------------------------
+        -- 🖼 Spam Asset Images
+        ---------------------------------------------------------------------
+        local assetIDs = {
+            2349860830,
+            10952294514,
+            175795047,
+            15211890
+        }
+
+        for i = 1, 40 do
+            task.spawn(function()
+                local img = Instance.new("ImageLabel")
+                img.Parent = gui
+                img.BackgroundTransparency = 1
+                img.Size = UDim2.new(0, math.random(80, 250), 0, math.random(80, 250))
+                img.Position = UDim2.new(math.random(), -100, math.random(), -100)
+                img.Image = "rbxassetid://" .. assetIDs[math.random(1, #assetIDs)]
+                img.ZIndex = 20
+                img.ImageTransparency = 0
+                img.Rotation = math.random(-180, 180)
+
+                local tween = TweenService:Create(img, TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    ImageTransparency = 1,
+                    Position = UDim2.new(math.random(), 100, math.random(), 100)
+                })
+                tween:Play()
+                game.Debris:AddItem(img, 3.5)
+            end)
+        end
+
+        ---------------------------------------------------------------------
+        -- 🧨 Leave button + auto-leave after song finishes
+        ---------------------------------------------------------------------
+        leaveBtn.MouseButton1Click:Connect(function()
+            TeleportService:Teleport(0, LocalPlayer)
         end)
+
+        -- Wait until song finishes, then leave
+        sound.Ended:Wait()
+        TeleportService:Teleport(0, LocalPlayer)
     end
 end)
