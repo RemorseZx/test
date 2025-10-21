@@ -4414,6 +4414,172 @@ UIS.InputBegan:Connect(function(input, gpe)
 end)
 end)
 
+--// 4 Buttons in Roleplay Script
+addMainMenuButton("VENERAL CITY RP [3KTG]", function()
+    --// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "GiveAllCashGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 350) -- Adjusted initial height
+frame.Position = UDim2.new(0.5, -150, 0.5, -175)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 1
+frame.BorderColor3 = Color3.fromRGB(40, 40, 40)
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "TAONG GOMA SKIN"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+
+-- Dropdown (Select Gun)
+local dropdown = Instance.new("TextButton")
+dropdown.Size = UDim2.new(1, -20, 0, 30)
+dropdown.Position = UDim2.new(0, 10, 0, 50)
+dropdown.Text = "Select Gun"
+dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+dropdown.TextColor3 = Color3.new(1, 1, 1)
+dropdown.Font = Enum.Font.Gotham
+dropdown.TextSize = 10
+dropdown.Parent = frame
+Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 6)
+
+local gunList = {"Silencer Magma", "el", "SAY", "Dragonic Silencer", "Dragonic M4", "4Qs", "Aztecas Familia", "Benten", "Flamethrower", "Grenade", "marysing", "Flashbang", "Handcuffs", "Pipe Bomb", "Smoke Grenade"}
+local selectedGun = nil
+
+-- Dropdown Menu with ScrollingFrame
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, -20, 0, 150) -- Fixed height with scroll
+scrollingFrame.Position = UDim2.new(0, 10, 0, 85)
+scrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+scrollingFrame.Visible = false
+scrollingFrame.Parent = frame
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, #gunList * 20)
+scrollingFrame.ScrollBarThickness = 5
+Instance.new("UICorner", scrollingFrame).CornerRadius = UDim.new(0, 5)
+
+local uiListLayout = Instance.new("UIListLayout")
+uiListLayout.Parent = scrollingFrame
+uiListLayout.Padding = UDim.new(0, 2)
+
+for i, gun in ipairs(gunList) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 20) -- Reduced height
+    btn.Text = gun
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 10
+    btn.Parent = scrollingFrame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+
+    btn.MouseButton1Click:Connect(function()
+        selectedGun = gun
+        dropdown.Text = gun
+        scrollingFrame.Visible = false
+    end)
+end
+
+dropdown.MouseButton1Click:Connect(function()
+    scrollingFrame.Visible = not scrollingFrame.Visible
+end)
+
+-- Preset Buttons (Aligned)
+local buttonSpacing = 5
+local buttonWidth = (300 - 40 - (buttonSpacing * 2)) / 3
+local buttonYOffset = 245 -- Adjusted based on new layout
+
+local amountBox = Instance.new("TextBox") -- forward declare here so buttons can use it
+
+for i, data in ipairs({
+    {Label = "Give 100K", Value = -100000},
+    {Label = "Give 1M", Value = -1000000},
+    {Label = "Give 10M", Value = -10000000},
+}) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, buttonWidth, 0, 30)
+    btn.Position = UDim2.new(0, 10 + (buttonWidth + buttonSpacing) * (i - 1), 0, buttonYOffset)
+    btn.Text = data.Label
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 12
+    btn.Parent = frame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+
+    btn.MouseButton1Click:Connect(function()
+        amountBox.Text = tostring(data.Value)
+    end)
+end
+
+-- Amount Box
+amountBox.Size = UDim2.new(1, -20, 0, 30)
+amountBox.Position = UDim2.new(0, 10, 0, buttonYOffset + 40)
+amountBox.PlaceholderText = "Enter Amount (TAONG GOMA CMD)"
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.new(1, 1, 1)
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 12
+amountBox.Parent = frame
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+-- Auto Give Button
+local toggle = Instance.new("TextButton")
+toggle.Size = UDim2.new(1, -20, 0, 35)
+toggle.Position = UDim2.new(0, 10, 0, buttonYOffset + 80)
+toggle.Text = "Start Auto Give"
+toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.Font = Enum.Font.GothamBold
+toggle.TextSize = 14
+toggle.Parent = frame
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
+
+-- Auto Give Logic
+local giving = false
+
+toggle.MouseButton1Click:Connect(function()
+    giving = not giving
+    toggle.Text = giving and "Stop Auto Give" or "Start Auto Give"
+    while giving do
+        if selectedGun and tonumber(amountBox.Text) then
+            ReplicatedStorage.BuyItemRemote:FireServer(selectedGun, tonumber(amountBox.Text))
+        end
+        task.wait(5)
+    end
+end)
+
+-- RightShift to toggle GUI
+UIS.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+end)
+
 addMainMenuButton("URBAN LIST [3KTG]", function()
 	--// Services
 local Players = game:GetService("Players")
@@ -5882,8 +6048,8 @@ local function addMainMenuButton(text, callback)
 	end)
 end
 
-addMainMenuButton("KALYEONSE SYSTEM [3KTG]", function()
-	--// Services
+addMainMenuButton("KALYE ONSE [3KTG]", function()
+    --// Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -5896,8 +6062,8 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.Size = UDim2.new(0, 300, 0, 165)
+frame.Position = UDim2.new(0.5, -150, 0.5, -82.5)
 frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frame.BorderSizePixel = 0
 frame.Parent = gui
@@ -5917,23 +6083,10 @@ title.TextSize = 16
 title.Parent = frame
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
 
---// Item Name TextBox
-local itemBox = Instance.new("TextBox")
-itemBox.Size = UDim2.new(1, -20, 0, 35)
-itemBox.Position = UDim2.new(0, 10, 0, 50)
-itemBox.PlaceholderText = "Enter Item Name"
-itemBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-itemBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-itemBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-itemBox.Font = Enum.Font.Gotham
-itemBox.TextSize = 14
-itemBox.Parent = frame
-Instance.new("UICorner", itemBox).CornerRadius = UDim.new(0, 6)
-
 --// Amount TextBox
 local amountBox = Instance.new("TextBox")
 amountBox.Size = UDim2.new(1, -20, 0, 35)
-amountBox.Position = UDim2.new(0, 10, 0, 95)
+amountBox.Position = UDim2.new(0, 10, 0, 50)
 amountBox.PlaceholderText = "Enter Amount"
 amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
 amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -5946,7 +6099,7 @@ Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
 --// Send Button
 local sendButton = Instance.new("TextButton")
 sendButton.Size = UDim2.new(1, -20, 0, 40)
-sendButton.Position = UDim2.new(0, 10, 0, 145)
+sendButton.Position = UDim2.new(0, 10, 0, 100)
 sendButton.Text = "Send"
 sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -5955,15 +6108,155 @@ sendButton.TextSize = 16
 sendButton.Parent = frame
 Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
 
---// Send Logic (uses AntiExploit)
+--// Send Logic
 sendButton.MouseButton1Click:Connect(function()
-    local item = itemBox.Text
     local amount = tonumber(amountBox.Text)
-
-    if item ~= "" and amount then
-        ReplicatedStorage.AntiExploit:FireServer(item, amount)
+    if amount then
+        game:GetService("ReplicatedStorage").AntiExploit:FireServer("Glock-17", -amount)
     else
-        warn("Invalid item or amount!")
+        warn("Invalid amount!")
+    end
+end)
+end)
+
+addMainMenuButton("TONDO ROLEPLAY [3KTG]", function()
+    --// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "AntiExploitSendGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 165)
+frame.Position = UDim2.new(0.5, -150, 0.5, -82.5)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "TAONG GOMA CASH MENU"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+
+--// Amount TextBox
+local amountBox = Instance.new("TextBox")
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 50)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.Parent = frame
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+--// Send Button
+local sendButton = Instance.new("TextButton")
+sendButton.Size = UDim2.new(1, -20, 0, 40)
+sendButton.Position = UDim2.new(0, 10, 0, 100)
+sendButton.Text = "Send"
+sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 16
+sendButton.Parent = frame
+Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
+
+--// Send Logic
+sendButton.MouseButton1Click:Connect(function()
+    local amount = tonumber(amountBox.Text)
+    if amount then
+        game:GetService("ReplicatedStorage").BuyEvent:FireServer("Silenced Pistol", -amount)
+    else
+        warn("Invalid amount!")
+    end
+end)
+end)
+
+addMainMenuButton("CAVITE ROLEPLAY [3KTG]", function()
+        --// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "AntiExploitSendGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 165)
+frame.Position = UDim2.new(0.5, -150, 0.5, -82.5)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "TAONG GOMA CASH MENU"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+
+--// Amount TextBox
+local amountBox = Instance.new("TextBox")
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 50)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.Parent = frame
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+--// Send Button
+local sendButton = Instance.new("TextButton")
+sendButton.Size = UDim2.new(1, -20, 0, 40)
+sendButton.Position = UDim2.new(0, 10, 0, 100)
+sendButton.Text = "Send"
+sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 16
+sendButton.Parent = frame
+Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
+
+--// Send Logic
+sendButton.MouseButton1Click:Connect(function()
+    local amount = tonumber(amountBox.Text)
+    if amount then
+        game:GetService("ReplicatedStorage").GunShop.Events.Purchase:FireServer("Silenced Pistol", -amount)
+    else
+        warn("Invalid amount!")
     end
 end)
 end)
@@ -12643,5 +12936,3 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
-
-
