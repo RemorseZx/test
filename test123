@@ -7754,6 +7754,200 @@ end)
 end)
 
 --// 4 Buttons in Roleplay Script
+addMainMenuButton("USERNAME COPIER [3KTG]", function()
+	-- Sleek Black Player Scanner GUI (Medium Version with Smooth Refresh Animation)
+-- All-black draggable GUI listing player usernames. Click to copy username.
+-- Use 'M' key to toggle visibility.
+
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "PlayerScannerGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Main frame (medium black window)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "Main"
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.Size = UDim2.new(0, 300, 0, 340)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 34)
+title.BackgroundTransparency = 1
+title.Text = "USERNAME COPIER"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+-- Close button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "Close"
+closeBtn.Size = UDim2.new(0, 26, 0, 26)
+closeBtn.Position = UDim2.new(1, -32, 0, 4)
+closeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+closeBtn.BorderSizePixel = 0
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.Parent = mainFrame
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui.Enabled = false
+end)
+
+-- Refresh Button
+local refreshBtn = Instance.new("TextButton")
+refreshBtn.Name = "Refresh"
+refreshBtn.Size = UDim2.new(0, 100, 0, 28)
+refreshBtn.Position = UDim2.new(0, 8, 0, 40)
+refreshBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+refreshBtn.BorderSizePixel = 1
+refreshBtn.BorderColor3 = Color3.fromRGB(25, 25, 25)
+refreshBtn.Text = "REFRESH"
+refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshBtn.Font = Enum.Font.GothamBold
+refreshBtn.TextSize = 13
+refreshBtn.Parent = mainFrame
+
+local refreshCorner = Instance.new("UICorner")
+refreshCorner.CornerRadius = UDim.new(0, 6)
+refreshCorner.Parent = refreshBtn
+
+-- Scrolling player list
+local scroll = Instance.new("ScrollingFrame")
+scroll.Name = "PlayerList"
+scroll.Position = UDim2.new(0, 8, 0, 74)
+scroll.Size = UDim2.new(1, -16, 1, -82)
+scroll.BackgroundTransparency = 1
+scroll.BorderSizePixel = 0
+scroll.ScrollBarThickness = 4
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.Parent = mainFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding = UDim.new(0, 5)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Parent = scroll
+
+local uiPadding = Instance.new("UIPadding")
+uiPadding.PaddingTop = UDim.new(0, 6)
+uiPadding.PaddingLeft = UDim.new(0, 6)
+uiPadding.PaddingRight = UDim.new(0, 6)
+uiPadding.PaddingBottom = UDim.new(0, 6)
+uiPadding.Parent = scroll
+
+-- Notification helper
+local function notify(titleText, text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = titleText or "Notice",
+			Text = text or "",
+			Duration = 2
+		})
+	end)
+end
+
+-- Create player button
+local function makePlayerButton(plr)
+	local btn = Instance.new("TextButton")
+	btn.Name = plr.Name
+	btn.Size = UDim2.new(1, -4, 0, 28)
+	btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	btn.BorderSizePixel = 1
+	btn.BorderColor3 = Color3.fromRGB(25, 25, 25)
+	btn.Text = plr.Name
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 15
+	btn.BackgroundTransparency = 1
+	btn.TextTransparency = 1
+	btn.Parent = scroll
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = btn
+
+	TweenService:Create(btn, TweenInfo.new(0.25), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+
+	btn.MouseButton1Click:Connect(function()
+		local username = plr.Name
+		local success, err = pcall(function()
+			if setclipboard then
+				setclipboard(username)
+				notify("Copied", username .. " copied!")
+			else
+				error("no setclipboard")
+			end
+		end)
+		if not success then
+			notify("Manual Copy", username .. " (setclipboard not supported)")
+		end
+	end)
+end
+
+-- Smooth refresh with fade effect
+local function refreshList()
+	-- Fade out existing buttons
+	for _, child in ipairs(scroll:GetChildren()) do
+		if child:IsA("TextButton") then
+			TweenService:Create(child, TweenInfo.new(0.15), {TextTransparency = 1, BackgroundTransparency = 1}):Play()
+		end
+	end
+	task.wait(0.15)
+
+	-- Clear old buttons
+	for _, child in ipairs(scroll:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+
+	-- Add new player buttons
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer then
+			makePlayerButton(plr)
+		end
+	end
+
+	local total = #Players:GetPlayers() * 32
+	scroll.CanvasSize = UDim2.new(0, 0, 0, total)
+	notify("Refreshed", "Player list updated")
+end
+
+refreshBtn.MouseButton1Click:Connect(refreshList)
+Players.PlayerAdded:Connect(refreshList)
+Players.PlayerRemoving:Connect(refreshList)
+refreshList()
+
+-- Toggle with M key
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.M then
+		screenGui.Enabled = not screenGui.Enabled
+	end
+end)
+
+screenGui.Enabled = true
+end)
+
+--// 4 Buttons in Roleplay Script
 addMainMenuButton("TRACK ALL MUSCLE T TO OPEN / OFF [3KTG]", function()
    --// Player Tracker + NameTag Display | Toggle with T key (FINAL FIXED VERSION)
 
@@ -13135,3 +13329,4 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
