@@ -10050,6 +10050,167 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
+addMainMenuButton("CASH DROP [3KTG]", function()
+	--// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+--// Main GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "CashDropGUI"
+gui.ResetOnSpawn = false
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- solid black
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- UI Corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+-- Title (White)
+local title = Instance.new("TextLabel")
+title.Text = "TAONG GOMA CASH"
+title.Size = UDim2.new(1, 0, 0, 35)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255) -- White
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.Parent = frame
+
+-- Username
+local usernameLabel = Instance.new("TextLabel")
+usernameLabel.Text = "Username:"
+usernameLabel.Size = UDim2.new(0, 100, 0, 25)
+usernameLabel.Position = UDim2.new(0, 15, 0, 45)
+usernameLabel.BackgroundTransparency = 1
+usernameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+usernameLabel.Font = Enum.Font.Gotham
+usernameLabel.TextSize = 14
+usernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+usernameLabel.Parent = frame
+
+-- Locked Username TextBox (auto-filled)
+local usernameBox = Instance.new("TextBox")
+usernameBox.Size = UDim2.new(0, 170, 0, 25)
+usernameBox.Position = UDim2.new(0, 110, 0, 45)
+usernameBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+usernameBox.TextColor3 = Color3.fromRGB(255, 255, 255) -- White
+usernameBox.Font = Enum.Font.Gotham
+usernameBox.TextSize = 14
+usernameBox.BorderSizePixel = 0
+usernameBox.Text = Players.LocalPlayer.Name
+usernameBox.PlaceholderText = Players.LocalPlayer.Name
+usernameBox.ClearTextOnFocus = false
+usernameBox.TextEditable = false -- lock to prevent editing
+usernameBox.Parent = frame
+
+local corner2 = corner:Clone()
+corner2.Parent = usernameBox
+
+-- Amount
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Text = "Amount:"
+amountLabel.Size = UDim2.new(0, 100, 0, 25)
+amountLabel.Position = UDim2.new(0, 15, 0, 80)
+amountLabel.BackgroundTransparency = 1
+amountLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 14
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+amountLabel.Parent = frame
+
+local amountBox = Instance.new("TextBox")
+amountBox.PlaceholderText = "Enter amount"
+amountBox.Text = "0.1"
+amountBox.Size = UDim2.new(0, 170, 0, 25)
+amountBox.Position = UDim2.new(0, 110, 0, 80)
+amountBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255) -- White
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.BorderSizePixel = 0
+amountBox.Parent = frame
+
+local corner3 = corner:Clone()
+corner3.Parent = amountBox
+
+-- Start Button (White)
+local startBtn = Instance.new("TextButton")
+startBtn.Text = "START"
+startBtn.Size = UDim2.new(0, 120, 0, 30)
+startBtn.Position = UDim2.new(0, 25, 0, 125)
+startBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White
+startBtn.TextColor3 = Color3.fromRGB(0, 0, 0) -- Text Black
+startBtn.Font = Enum.Font.GothamBold
+startBtn.TextSize = 16
+startBtn.BorderSizePixel = 0
+startBtn.Parent = frame
+
+local corner4 = corner:Clone()
+corner4.Parent = startBtn
+
+-- Stop Button (White)
+local stopBtn = Instance.new("TextButton")
+stopBtn.Text = "STOP"
+stopBtn.Size = UDim2.new(0, 120, 0, 30)
+stopBtn.Position = UDim2.new(0, 155, 0, 125)
+stopBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White
+stopBtn.TextColor3 = Color3.fromRGB(0, 0, 0) -- Text Black
+stopBtn.Font = Enum.Font.GothamBold
+stopBtn.TextSize = 16
+stopBtn.BorderSizePixel = 0
+stopBtn.Parent = frame
+
+local corner5 = corner:Clone()
+corner5.Parent = stopBtn
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Text = "Status: Idle"
+statusLabel.Size = UDim2.new(1, 0, 0, 25)
+statusLabel.Position = UDim2.new(0, 0, 0, 165)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200) -- Light gray
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 14
+statusLabel.Parent = frame
+
+-- Logic
+local running = false
+local dropThread
+
+startBtn.MouseButton1Click:Connect(function()
+	if running then return end
+	running = true
+	statusLabel.Text = "Status: Dropping..."
+	statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White
+
+	dropThread = task.spawn(function()
+		while running do
+			local username = usernameBox.Text
+			local amount = tonumber(amountBox.Text) or 0.1
+			ReplicatedStorage.DropCash:FireServer(username, amount)
+			task.wait()
+		end
+	end)
+end)
+
+stopBtn.MouseButton1Click:Connect(function()
+	running = false
+	statusLabel.Text = "Status: Idle"
+	statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200) -- Light gray
+end)
+end)
+
+--// 8 Buttons in Main Menu
 addMainMenuButton("INFINITE STAMINA [TEST]", function()
 	--// Infinite Stamina Script | Solara Executor
 
@@ -13779,6 +13940,7 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
 
 
