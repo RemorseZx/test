@@ -10197,6 +10197,375 @@ end
 print("[No Spread] Enabled for all guns. Targeting:", targetPart)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("PERSONAL CHESTER", function()
+	--// SERVICES
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+--// AIMBOT SETTINGS
+local AimEnabled = false
+local AimbotMode = "Instant"
+local Smoothness = 1
+local BaseFOV = 5
+
+--// CROSSHAIR DATA
+local Crosshairs = {
+    {id = 1827745860, name = "Dot", fovMult = 0.5},
+    {id = 5998624788, name = "Circle", fovMult = 1.2},
+    {id = 749187669, name = "Cross", fovMult = 1.0},
+    {id = 1469004289, name = "Small X", fovMult = 0.7},
+    {id = 11722368344, name = "Big Circle", fovMult = 2.0},
+    {id = 2614612882, name = "Thin Cross", fovMult = 0.8},
+    {id = 749187664, name = "Plus", fovMult = 0.9},
+    {id = 251435889, name = "Classic", fovMult = 1.1},
+    {id = 5143056985, name = "Red Dot", fovMult = 0.6},
+    {id = 11759202791, name = "Holo", fovMult = 1.5},
+    {id = 1478500977, name = "Star", fovMult = 1.3},
+    {id = 11726821301, name = "Neon", fovMult = 1.1},
+    {id = 5536063313, name = "Target", fovMult = 1.4},
+    {id = 11746928636, name = "Scope", fovMult = 1.8},
+    {id = 11759198682, name = "Ring", fovMult = 1.6},
+    {id = 11826465934, name = "Hex", fovMult = 1.0},
+    {id = 11927593271, name = "Glow", fovMult = 1.7},
+    {id = 11867351018, name = "Tech", fovMult = 1.2},
+    {id = 4048495272,   name = "Pulse", fovMult = 0.9},
+    {id = 10891594364,  name = "Vortex", fovMult = 1.4},
+    {id = 5998624778,   name = "Mini Dot", fovMult = 0.6},
+    {id = 2207556774,   name = "Arrow", fovMult = 1.1},
+    {id = 426730675,    name = "Bracket", fovMult = 1.0},
+    {id = 11754490336,  name = "Hollow", fovMult = 1.3},
+    {id = 10868459554,  name = "Trident", fovMult = 1.2},
+    {id = 11719595129,  name = "Blade", fovMult = 0.8},
+    {id = 1489774665,   name = "Nexus", fovMult = 1.5},
+    {id = 6079707648,   name = "Core", fovMult = 0.7},
+    {id = 11390723044,  name = "Phantom", fovMult = 1.6},
+    {id = 10878218322,  name = "Ghost", fovMult = 1.1},
+    {id = 11722081515,  name = "Razor", fovMult = 0.9},
+    {id = 11390723057,  name = "Spike", fovMult = 1.0},
+    {id = 251497633,    name = "Retro", fovMult = 1.2},
+    {id = 11722153703,  name = "Fusion", fovMult = 1.7},
+    {id = 8680062686,   name = "Nova", fovMult = 1.4},
+    {id = 11350518862,  name = "Apex", fovMult = 1.3},
+    {id = 11722554017,  name = "Zenith", fovMult = 1.8},
+    {id = 8360620314,   name = "Echo", fovMult = 1.0},
+    {id = 11988231127,  name = "Spectre", fovMult = 1.5},
+    {id = 11830989304,  name = "Cipher", fovMult = 1.2},
+    {id = 11759293285,  name = "Omega", fovMult = 1.6},
+    {id = 11754499452,  name = "Sigma", fovMult = 0.8},
+    {id = 2555584348,   name = "Delta", fovMult = 1.1},
+    {id = 11717828297,  name = "Gamma", fovMult = 1.3},
+    {id = 11724945237,  name = "Theta", fovMult = 1.4},
+    {id = 11733801922,  name = "Kappa", fovMult = 1.0},
+    {id = 11733622734,  name = "Lambda", fovMult = 1.2},
+    {id = 11754273720,  name = "Mu", fovMult = 0.9},
+    {id = 11754490994,  name = "Nu", fovMult = 1.1},
+    {id = 11756696859,  name = "Xi", fovMult = 1.5},
+    {id = 11802094220,  name = "Omicron", fovMult = 1.3},
+    {id = 11867337948,  name = "Pi", fovMult = 1.0},
+    {id = 11915656516,  name = "Rho", fovMult = 1.4},
+    {id = 11986603133,  name = "Tau", fovMult = 1.7}
+}
+
+local CurrentCrosshair = Crosshairs[1]
+local CurrentFOV = BaseFOV * CurrentCrosshair.fovMult
+
+--// GUI SETUP
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CrosshairAimbotGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+--// CROSSHAIR
+local crosshair = Instance.new("ImageLabel")
+crosshair.Name = "CenterCrosshair"
+crosshair.Image = "rbxassetid://" .. tostring(CurrentCrosshair.id)
+crosshair.Size = UDim2.new(0, 32, 0, 32)
+crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+crosshair.Position = UDim2.new(0.5, 0, 0.46, 0)
+crosshair.BackgroundTransparency = 1
+crosshair.ZIndex = 10
+crosshair.Active = false
+crosshair.Parent = screenGui
+
+--// HIDE CROSSHAIR (I)
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.I then
+		crosshair.Visible = not crosshair.Visible
+	end
+end)
+
+--// MAIN FRAME
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 340, 0, 560)
+mainFrame.Position = UDim2.new(0, 20, 0.5, -280)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+--// TITLE
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "CROSSHAIR AIMBOT - GOMA"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = title
+
+--// SCROLL FRAME
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -20, 1, -160)
+scrollFrame.Position = UDim2.new(0, 10, 0, 55)
+scrollFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+scrollFrame.ScrollBarThickness = 6
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
+scrollFrame.BorderSizePixel = 0
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollFrame.Parent = mainFrame
+
+local layout = Instance.new("UIGridLayout")
+layout.CellSize = UDim2.new(0, 85, 0, 95)
+layout.CellPadding = UDim2.new(0, 12, 0, 12)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = scrollFrame
+
+--// SETTINGS FRAME
+local settingsFrame = Instance.new("Frame")
+settingsFrame.Size = UDim2.new(1, -20, 0, 110)
+settingsFrame.Position = UDim2.new(0, 10, 1, -120)
+settingsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+settingsFrame.BorderSizePixel = 0
+settingsFrame.Parent = mainFrame
+
+local settingsCorner = Instance.new("UICorner")
+settingsCorner.CornerRadius = UDim.new(0, 10)
+settingsCorner.Parent = settingsFrame
+
+-- Mode Label
+local modeLabel = Instance.new("TextLabel")
+modeLabel.Text = "Aimbot Mode:"
+modeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+modeLabel.Size = UDim2.new(0, 120, 0, 25)
+modeLabel.Position = UDim2.new(0, 10, 0, 10)
+modeLabel.BackgroundTransparency = 1
+modeLabel.Font = Enum.Font.Gotham
+modeLabel.TextSize = 14
+modeLabel.Parent = settingsFrame
+
+-- Mode Dropdown Button
+local modeDropdown = Instance.new("TextButton")
+modeDropdown.Text = "Mode: Instant"
+modeDropdown.Size = UDim2.new(0, 160, 0, 25)
+modeDropdown.Position = UDim2.new(0, 140, 0, 10)
+modeDropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+modeDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+modeDropdown.Font = Enum.Font.Gotham
+modeDropdown.TextSize = 14
+modeDropdown.Parent = settingsFrame
+
+local dropdownCorner = Instance.new("UICorner")
+dropdownCorner.CornerRadius = UDim.new(0, 8)
+dropdownCorner.Parent = modeDropdown
+
+-- Toggle Mode Function
+modeDropdown.MouseButton1Click:Connect(function()
+	if AimbotMode == "Instant" then
+		AimbotMode = "Smooth"
+		modeDropdown.Text = "Mode: Smooth"
+	else
+		AimbotMode = "Instant"
+		modeDropdown.Text = "Mode: Instant"
+	end
+end)
+
+-- Smoothness Input
+local smoothLabel = Instance.new("TextLabel")
+smoothLabel.Text = "Smoothness:"
+smoothLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+smoothLabel.Size = UDim2.new(0, 120, 0, 25)
+smoothLabel.Position = UDim2.new(0, 10, 0, 45)
+smoothLabel.BackgroundTransparency = 1
+smoothLabel.Font = Enum.Font.Gotham
+smoothLabel.TextSize = 14
+smoothLabel.Parent = settingsFrame
+
+local smoothBox = Instance.new("TextBox")
+smoothBox.Size = UDim2.new(0, 160, 0, 25)
+smoothBox.Position = UDim2.new(0, 140, 0, 45)
+smoothBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+smoothBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+smoothBox.PlaceholderText = tostring(Smoothness)
+smoothBox.Font = Enum.Font.Code
+smoothBox.TextSize = 14
+smoothBox.Parent = settingsFrame
+
+local smoothCorner = Instance.new("UICorner")
+smoothCorner.CornerRadius = UDim.new(0, 8)
+smoothCorner.Parent = smoothBox
+
+-- Update Smoothness on Input
+smoothBox.FocusLost:Connect(function(enterPressed)
+	local val = tonumber(smoothBox.Text)
+	if val and val > 0 then
+		Smoothness = math.clamp(val, 0.01, 1)
+	end
+end)
+
+-- STATUS LABEL
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 35)
+statusLabel.Position = UDim2.new(0, 10, 1, -45)
+statusLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.Text = "Aimbot: OFF | FOV: " .. CurrentFOV
+statusLabel.Font = Enum.Font.Code
+statusLabel.TextSize = 16
+statusLabel.Parent = mainFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 8)
+statusCorner.Parent = statusLabel
+
+-- CROSSHAIR BUTTONS
+local function createCrosshairButton(data)
+    local frame = Instance.new("Frame")
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BorderSizePixel = 1
+    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = frame
+
+    local img = Instance.new("ImageLabel")
+    img.Size = UDim2.new(1, -8, 0.75, -8)
+    img.Position = UDim2.new(0, 4, 0, 4)
+    img.BackgroundTransparency = 1
+    img.Image = "rbxassetid://" .. tostring(data.id)
+    img.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    img.Parent = frame
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 0.25, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0.75, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = data.name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.Font = Enum.Font.Gotham
+    nameLabel.TextSize = 13
+    nameLabel.Parent = frame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.BackgroundTransparency = 1
+    button.Text = ""
+    button.Parent = frame
+
+    button.MouseButton1Click:Connect(function()
+        CurrentCrosshair = data
+        CurrentFOV = BaseFOV * data.fovMult
+        crosshair.Image = "rbxassetid://" .. tostring(data.id)
+        statusLabel.Text = "Aimbot: " .. (AimEnabled and "ON" or "OFF") .. " | FOV: " .. math.floor(CurrentFOV * 10) / 10
+    end)
+
+    frame.Parent = scrollFrame
+end
+
+for _, data in ipairs(Crosshairs) do
+	createCrosshairButton(data)
+end
+
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	scrollFrame.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 20)
+end)
+
+--// AIMBOT LOGIC
+local function getTargetPart(character)
+	return character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
+end
+
+local function getClosestPlayer()
+	local closest, shortest = nil, math.huge
+	if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return nil end
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and p.Character then
+			local part = getTargetPart(p.Character)
+			local hum = p.Character:FindFirstChildOfClass("Humanoid")
+			if part and hum and hum.Health > 0 then
+				local pos, visible = Camera:WorldToScreenPoint(part.Position)
+				if visible then
+					local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+					if dist < CurrentFOV * 20 and dist < shortest then
+						closest, shortest = part.Position, dist
+					end
+				end
+			end
+		end
+	end
+	return closest
+end
+
+local function aimAtTarget()
+	local t = getClosestPlayer()
+	if t then
+		if AimbotMode == "Instant" then
+			Camera.CFrame = CFrame.new(Camera.CFrame.Position, t)
+		else
+			Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, t), Smoothness)
+		end
+	end
+end
+
+-- RIGHT-CLICK TOGGLE AIMBOT
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+		AimEnabled = true
+		statusLabel.Text = "Aimbot: ON | FOV: " .. math.floor(CurrentFOV * 10) / 10
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gp)
+	if gp then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+		AimEnabled = false
+		statusLabel.Text = "Aimbot: OFF | FOV: " .. math.floor(CurrentFOV * 10) / 10
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if AimEnabled then
+		aimAtTarget()
+	end
+end)
+
+-- TOGGLE MENU (INSERT)
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.Insert then
+		mainFrame.Visible = not mainFrame.Visible
+	end
+end)
+
+print("ILOVEYOU MONSY !")
+end)
+
 --// 4 Buttons in Roleplay Script
 addMainMenuButton("BAGONG BARYO CITY [3KTG]", function()
 	--// Services
@@ -13329,5 +13698,6 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
 
