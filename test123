@@ -3366,7 +3366,7 @@ toggle.MouseButton1Click:Connect(function()
 
     while isAutoBuying do
         if selectedItem then
-            ReplicatedStorage.GunShop.Events.Purchase:FireServer(selectedItem, -0)
+            ReplicatedStorage.GunStoreFolder.BuyTool:FireServer(selectedItem, -0)
             print("Auto-buying " .. selectedItem)
         end
         task.wait(0.001)
@@ -3378,6 +3378,68 @@ UIS.InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
         gui.Enabled = not gui.Enabled
     end
+end)
+end)
+
+addMainMenuButton("URBAN CITY V3 AUTO OXY [3KTG]", function()
+	--// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local oxyRemote = ReplicatedStorage:WaitForChild("OxyComplete")
+
+--// ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoOxyGUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+--// Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 120)
+frame.Position = UDim2.new(0.5, -125, 0.5, -60)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- ultra black
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+--// Rounded corners
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 15)
+uiCorner.Parent = frame
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "AUTO OXY"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.Parent = frame
+
+--// Button
+local oxyButton = Instance.new("TextButton")
+oxyButton.Size = UDim2.new(0, 200, 0, 50)
+oxyButton.Position = UDim2.new(0.5, -100, 0, 60)
+oxyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- full black
+oxyButton.Text = "OXY"
+oxyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+oxyButton.Font = Enum.Font.GothamBold
+oxyButton.TextSize = 20
+oxyButton.Parent = frame
+
+--// Button rounded corners
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 12)
+buttonCorner.Parent = oxyButton
+
+--// Button click function
+oxyButton.MouseButton1Click:Connect(function()
+    oxyRemote:FireServer("APOY", -1)
 end)
 end)
 
@@ -6472,7 +6534,7 @@ Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
 sendButton.MouseButton1Click:Connect(function()
     local amount = tonumber(amountBox.Text)
     if amount then
-        game:GetService("ReplicatedStorage").GunShop.Events.Purchase:FireServer("Silenced Pistol", -amount)
+        game:GetService("ReplicatedStorage").GunStoreFolder.BuyTool:FireServer("Silenced Pistol", -amount)
     else
         warn("Invalid amount!")
     end
@@ -13717,4 +13779,5 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
