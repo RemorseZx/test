@@ -67,7 +67,7 @@ local whitelistedKeys =
 "CLYDE-24HX-3QK7-2BVM", "IZZY-72BR-0JX5-1LQ4", "CHAM-36JM-5H8L-9TP2", "YOHAN-03DL-6F9T-7RY1", 
 "TAKO-57QN-1ZB4-3HKP", "CHESTER-02VB-UD84-7JH8", "JAVI-67PL-2XHF-0RZ8", "JAY-19VP-7ZDL-6FT3", 
 "PUDAY-48ZJ-0NQD-3YH7", "DAICHI-28QF-9H2L-6BWC", "SANTINO-34HX-5QK9-2BVM", "zxz", 
-"zzz"}
+"PRIMO-11JM-8H5L-4TP9"}
 
 --// CONFIG
 local webhookURL = "https://discord.com/api/webhooks/1424264813001048125/rjgwpJImauKHhuuP-pI3BbWTU7-jPxIZxHoLyrnfsdgnpgxAj1mMVN46EpEKk0cqqnwa"
@@ -3369,7 +3369,7 @@ toggle.MouseButton1Click:Connect(function()
             ReplicatedStorage.GunStoreFolder.BuyTool:FireServer(selectedItem, -0)
             print("Auto-buying " .. selectedItem)
         end
-        task.wait(0.001)
+        task.wait(5)
     end
 end)
 
@@ -6534,7 +6534,7 @@ Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
 sendButton.MouseButton1Click:Connect(function()
     local amount = tonumber(amountBox.Text)
     if amount then
-        game:GetService("ReplicatedStorage").GunStoreFolder.BuyTool:FireServer("Silenced Pistol", -amount)
+        game:GetService("ReplicatedStorage").GunStoreFolder.BuyTool:FireServer("Pistol", -amount)
     else
         warn("Invalid amount!")
     end
@@ -13779,5 +13779,6 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
 
