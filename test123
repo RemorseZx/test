@@ -2631,8 +2631,436 @@ local function addMainMenuButton(text, callback)
 	end)
 end
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("STORAGE SYSTEM VIEWER [3KTG]", function()
+    -- LocalScript: StorageSystem Tools Viewer (All Black + Copyable Tools + Hide with O)
+-- Place in StarterPlayerScripts or StarterGui
+
+--// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// Find StorageSystem
+local storageSystem = ReplicatedStorage:FindFirstChild("StorageSystem")
+if not storageSystem then
+    warn("❌ 'StorageSystem' not found in ReplicatedStorage.")
+    return
+end
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "StorageSystemToolsViewer"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 400, 0, 340)
+frame.Position = UDim2.new(0.5, -200, 0.25, 0)
+frame.Active = true
+frame.Draggable = true
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+frame.AnchorPoint = Vector2.new(0.5, 0)
+
+-- Rounded corners
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 12)
+
+-- subtle shadow frame
+local shadow = Instance.new("Frame", frame)
+shadow.Size = UDim2.new(1, 0, 1, 0)
+shadow.Position = UDim2.new(0, 4, 0, 4)
+shadow.BackgroundColor3 = Color3.fromRGB(10,10,10)
+shadow.ZIndex = -1
+shadow.BorderSizePixel = 0
+
+-- Title bar
+local titleBar = Instance.new("Frame", frame)
+titleBar.Size = UDim2.new(1, 0, 0, 35)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+titleBar.BorderSizePixel = 0
+local titleCorner = Instance.new("UICorner", titleBar)
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Name = "TitleCorner"
+
+local title = Instance.new("TextLabel", titleBar)
+title.Size = UDim2.new(1, 0, 1, 0)
+title.BackgroundTransparency = 1
+title.Text = "StorageSystem Viewer"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local info = Instance.new("TextLabel", frame)
+info.Size = UDim2.new(1, -10, 0, 20)
+info.Position = UDim2.new(0, 5, 0, 40)
+info.BackgroundTransparency = 1
+info.Text = "   Click a tool to copy its name  |  Press [O] to hide/show"
+info.Font = Enum.Font.Gotham
+info.TextSize = 13
+info.TextColor3 = Color3.fromRGB(180, 180, 180)
+info.TextXAlignment = Enum.TextXAlignment.Left
+
+local scrolling = Instance.new("ScrollingFrame", frame)
+scrolling.Size = UDim2.new(1, -20, 1, -70)
+scrolling.Position = UDim2.new(0, 10, 0, 65)
+scrolling.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+scrolling.BorderSizePixel = 0
+scrolling.ScrollBarThickness = 6
+scrolling.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+local layout = Instance.new("UIListLayout", scrolling)
+layout.Padding = UDim.new(0, 6)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+--// Helper Functions
+local function clearList()
+    for _, child in ipairs(scrolling:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+end
+
+local function copyToClipboard(text)
+    if setclipboard then
+        setclipboard(text)
+    elseif writeclipboard then
+        writeclipboard(text)
+    else
+        warn("Clipboard copy not supported in this environment.")
+    end
+end
+
+local function addToolLine(tool)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -8, 0, 26)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Text = " " .. tool.Name
+    btn.AutoButtonColor = false
+    btn.Parent = scrolling
+
+    local corner = Instance.new("UICorner", btn)
+    corner.CornerRadius = UDim.new(0, 6)
+
+    -- Hover effect
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    end)
+
+    -- Click to copy
+    btn.MouseButton1Click:Connect(function()
+        copyToClipboard(tool.Name)
+        btn.TextColor3 = Color3.fromRGB(0, 255, 0)
+        btn.Text = " Copied: " .. tool.Name
+        task.wait(0.8)
+        btn.Text = " " .. tool.Name
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+end
+
+local function rebuildList()
+    clearList()
+    local tools = {}
+    for _, inst in ipairs(storageSystem:GetDescendants()) do
+        if inst:IsA("Tool") then
+            table.insert(tools, inst)
+        end
+    end
+    table.sort(tools, function(a,b) return a.Name:lower() < b.Name:lower() end)
+    for _, t in ipairs(tools) do
+        addToolLine(t)
+    end
+    scrolling.CanvasSize = UDim2.new(0, 0, 0, #tools * 32)
+end
+
+--// Build + Live Update
+rebuildList()
+storageSystem.DescendantAdded:Connect(function(obj)
+    if obj:IsA("Tool") then rebuildList() end
+end)
+storageSystem.DescendantRemoving:Connect(function(obj)
+    if obj:IsA("Tool") then rebuildList() end
+end)
+
+--// Toggle GUI visibility with "K"
+local visible = true
+UserInputService.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+	if input.KeyCode == Enum.KeyCode.K then
+		visible = not visible
+		gui.Enabled = visible
+	end
+end)
+
+print("✅ StorageSystem Tools Viewer loaded (Press O to toggle, click to copy).")
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("BUYITEM REMOTE [3KTG]", function()
+    -- LocalScript: All-black draggable BUY GUI (centered title + auto-clear textboxes)
+-- Place this in StarterGui or StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// Find the remote to use
+local buyRemote = ReplicatedStorage:FindFirstChild("BuyItemRemote") or ReplicatedStorage:FindFirstChild("AntiExploit")
+
+--// GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "CashMenuGUI"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+--// Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+--// Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "TAONG GOMA"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextWrapped = true
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
+
+--// Item Name TextBox
+local itemBox = Instance.new("TextBox", frame)
+itemBox.Size = UDim2.new(1, -20, 0, 35)
+itemBox.Position = UDim2.new(0, 10, 0, 55)
+itemBox.PlaceholderText = "Enter Item Name"
+itemBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+itemBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+itemBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+itemBox.Font = Enum.Font.Gotham
+itemBox.TextSize = 14
+Instance.new("UICorner", itemBox).CornerRadius = UDim.new(0, 6)
+itemBox.ClearTextOnFocus = true -- auto clear when clicked
+
+--// Amount TextBox
+local amountBox = Instance.new("TextBox", frame)
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 100)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+amountBox.ClearTextOnFocus = true -- auto clear when clicked
+
+--// Send Button
+local sendButton = Instance.new("TextButton", frame)
+sendButton.Size = UDim2.new(1, -20, 0, 40)
+sendButton.Position = UDim2.new(0, 10, 0, 145)
+sendButton.Text = "BUY"
+sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 16
+Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
+
+--// Feedback Text
+local feedback = Instance.new("TextLabel", frame)
+feedback.Size = UDim2.new(1, -20, 0, 20)
+feedback.Position = UDim2.new(0, 10, 1, -22)
+feedback.BackgroundTransparency = 1
+feedback.Font = Enum.Font.Gotham
+feedback.TextSize = 12
+feedback.TextColor3 = Color3.fromRGB(200, 200, 200)
+feedback.Text = ""
+
+local function showFeedback(msg, t)
+	feedback.Text = msg
+	task.delay(t or 2, function()
+		if feedback then feedback.Text = "" end
+	end)
+end
+
+--// Buy Logic
+local function buyItem()
+	local item = itemBox.Text
+	local amount = tonumber(amountBox.Text)
+
+	if item == "" or not amount then
+		showFeedback("Invalid input!", 2)
+		return
+	end
+
+	if not buyRemote then
+		showFeedback("Remote not found!", 2)
+		return
+	end
+
+	buyRemote:FireServer(item, amount)
+	showFeedback("Sent: " .. item .. " x" .. amount, 2)
+end
+
+sendButton.MouseButton1Click:Connect(buyItem)
+itemBox.FocusLost:Connect(function(enter) if enter then buyItem() end end)
+amountBox.FocusLost:Connect(function(enter) if enter then buyItem() end end)
+
+-- Hover effect (slight brightening)
+sendButton.MouseEnter:Connect(function()
+	sendButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+end)
+sendButton.MouseLeave:Connect(function()
+	sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+end)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("GUNSHOP REMOTE [3KTG]", function()
+    -- LocalScript: TAONG GOMA CASH MENU (GunShop Purchase System)
+-- Place inside StarterGui or StarterPlayerScripts
+
+--// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// Remote setup
+local purchaseEvent = ReplicatedStorage:WaitForChild("GunShop"):WaitForChild("Events"):WaitForChild("Purchase")
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "TaongGomaCashMenu"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+--// Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "TAONG GOMA"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextWrapped = true
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
+
+--// Item Name TextBox
+local itemBox = Instance.new("TextBox", frame)
+itemBox.Size = UDim2.new(1, -20, 0, 35)
+itemBox.Position = UDim2.new(0, 10, 0, 55)
+itemBox.PlaceholderText = "Enter Item Name"
+itemBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+itemBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+itemBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+itemBox.Font = Enum.Font.Gotham
+itemBox.TextSize = 14
+itemBox.ClearTextOnFocus = true
+Instance.new("UICorner", itemBox).CornerRadius = UDim.new(0, 6)
+
+--// Amount TextBox
+local amountBox = Instance.new("TextBox", frame)
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 100)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.ClearTextOnFocus = true
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+--// BUY Button
+local buyButton = Instance.new("TextButton", frame)
+buyButton.Size = UDim2.new(1, -20, 0, 40)
+buyButton.Position = UDim2.new(0, 10, 0, 145)
+buyButton.Text = "BUY"
+buyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+buyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+buyButton.Font = Enum.Font.GothamBold
+buyButton.TextSize = 16
+Instance.new("UICorner", buyButton).CornerRadius = UDim.new(0, 6)
+
+-- Hover animation
+buyButton.MouseEnter:Connect(function()
+	buyButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+end)
+buyButton.MouseLeave:Connect(function()
+	buyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+end)
+
+-- Feedback label
+local feedback = Instance.new("TextLabel", frame)
+feedback.Size = UDim2.new(1, -20, 0, 20)
+feedback.Position = UDim2.new(0, 10, 1, -22)
+feedback.BackgroundTransparency = 1
+feedback.Font = Enum.Font.Gotham
+feedback.TextSize = 12
+feedback.TextColor3 = Color3.fromRGB(200, 200, 200)
+feedback.Text = ""
+
+-- Feedback function
+local function showFeedback(msg, t)
+	feedback.Text = msg
+	task.delay(t or 2, function()
+		if feedback then feedback.Text = "" end
+	end)
+end
+
+-- Purchase Logic
+local function buyItem()
+	local item = itemBox.Text
+	local amount = tonumber(-amountBox.Text)
+
+	if item == "" or not amount then
+		showFeedback("Invalid item or amount!", 2)
+		return
+	end
+
+	purchaseEvent:FireServer(item, amount)
+	showFeedback("Sent: " .. item .. " x" .. amount, 2)
+end
+
+buyButton.MouseButton1Click:Connect(buyItem)
+itemBox.FocusLost:Connect(function(enter) if enter then buyItem() end end)
+amountBox.FocusLost:Connect(function(enter) if enter then buyItem() end end)
+end)
+
 --// 4 Buttons in Roleplay Script
-addMainMenuButton("GUNSHOP SYSTEM [3KTG]", function()
+addMainMenuButton("GUNSHOP AUTO BUY [3KTG]", function()
 	-- Services
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -13940,8 +14368,3 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
-
-
-
-
-
