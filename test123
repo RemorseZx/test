@@ -6828,6 +6828,77 @@ sendButton.MouseButton1Click:Connect(function()
 end)
 end)
 
+addMainMenuButton("PROMINENCE CITY S1 [3KTG]", function()
+    --// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "AntiExploitSendGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 165)
+frame.Position = UDim2.new(0.5, -150, 0.5, -82.5)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "TAONG GOMA CASH MENU"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+
+--// Amount TextBox
+local amountBox = Instance.new("TextBox")
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 50)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.Parent = frame
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+--// Send Button
+local sendButton = Instance.new("TextButton")
+sendButton.Size = UDim2.new(1, -20, 0, 40)
+sendButton.Position = UDim2.new(0, 10, 0, 100)
+sendButton.Text = "Send"
+sendButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 16
+sendButton.Parent = frame
+Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
+
+--// Send Logic
+sendButton.MouseButton1Click:Connect(function()
+    local amount = tonumber(amountBox.Text)
+    if amount then
+        game:GetService("ReplicatedStorage").BuyToolEvent:FireServer("Calisto Pistol", -amount)
+    else
+        warn("Invalid amount!")
+    end
+end)
+end)
+
 addMainMenuButton("CAVITE ROLEPLAY [3KTG]", function()
         --// Services
 local Players = game:GetService("Players")
@@ -14369,6 +14440,7 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
 
 
