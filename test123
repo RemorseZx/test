@@ -2809,6 +2809,250 @@ print("✅ StorageSystem Tools Viewer loaded (Press O to toggle, click to copy).
 end)
 
 --// 8 Buttons in Main Menu
+addMainMenuButton("BAGONG BARYO OPEN THIS + BUY ITEM REMOTE", function()
+	-- LocalScript: GunEngineAssets.WeaponModels Viewer (NO DUPLICATES)
+-- Place in StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Wait for path
+local gunEngine = ReplicatedStorage:WaitForChild("GunEngineAssets", 5)
+local weaponModels = gunEngine and gunEngine:WaitForChild("WeaponModels", 5)
+if not weaponModels then
+	warn("GunEngineAssets.WeaponModels not found!")
+	return
+end
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "WeaponModelsViewer"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 450, 0, 420)
+frame.Position = UDim2.new(0.5, -225, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+-- Title
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 35)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = titleBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
+title.BackgroundTransparency = 1
+title.Text = "WeaponModels Viewer"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = titleBar
+
+-- Info
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1, -20, 0, 20)
+info.Position = UDim2.new(0, 10, 0, 40)
+info.BackgroundTransparency = 1
+info.Text = "Click to copy name | Press O to toggle"
+info.Font = Enum.Font.Gotham
+info.TextSize = 13
+info.TextColor3 = Color3.fromRGB(180, 180, 180)
+info.TextXAlignment = Enum.TextXAlignment.Left
+info.Parent = frame
+
+-- Scrolling
+local scrolling = Instance.new("ScrollingFrame")
+scrolling.Size = UDim2.new(1, -20, 1, -75)
+scrolling.Position = UDim2.new(0, 10, 0, 65)
+scrolling.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+scrolling.BorderSizePixel = 0
+scrolling.ScrollBarThickness = 6
+scrolling.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrolling.Parent = frame
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = scrolling
+
+-- Copy
+local function copy(text)
+	if setclipboard then setclipboard(text)
+	elseif writeclipboard then writeclipboard(text) end
+end
+
+-- Clear
+local function clear()
+	for _, v in scrolling:GetChildren() do
+		if v:IsA("GuiObject") then v:Destroy() end
+	end
+end
+
+-- Icon
+local function getIcon(obj)
+	if obj:IsA("Tool") then return "Tool"
+	elseif obj:IsA("Model") then return "Model"
+	elseif obj:IsA("Folder") then return "Folder"
+	elseif obj:IsA("Part") then return "Part"
+	else return "Item"
+	end
+end
+
+-- Add Header
+local function addHeader(name)
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, -10, 0, 30)
+	lbl.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	lbl.Text = " " .. name
+	lbl.Font = Enum.Font.GothamBold
+	lbl.TextSize = 14
+	lbl.TextColor3 = Color3.fromRGB(100, 200, 255)
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	lbl.Parent = scrolling
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 6)
+	c.Parent = lbl
+end
+
+-- Add Item
+local function addItem(item)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -20, 0, 28)
+	btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+	btn.TextXAlignment = Enum.TextXAlignment.Left
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 13
+	btn.Text = "   " .. getIcon(item) .. " " .. item.Name
+	btn.AutoButtonColor = false
+	btn.Parent = scrolling
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 5)
+	c.Parent = btn
+
+	-- Hover
+	btn.MouseEnter:Connect(function() btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35) end)
+	btn.MouseLeave:Connect(function() btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20) end)
+
+	-- Click to copy
+	btn.MouseButton1Click:Connect(function()
+		copy(item.Name)
+		local oldText = btn.Text
+		btn.TextColor3 = Color3.fromRGB(0, 255, 0)
+		btn.Text = "   Copied: " .. item.Name
+		task.wait(0.7)
+		btn.Text = oldText
+		btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+	end)
+end
+
+-- Rebuild (NO DUPLICATES)
+local function rebuild()
+	clear()
+
+	local seen = {}  -- Prevent duplicates
+	local folderMap = {}
+
+	-- Only scan direct children of WeaponModels
+	for _, child in ipairs(weaponModels:GetChildren()) do
+		local name = child.Name
+		if not seen[name] then
+			seen[name] = true
+
+			if child:IsA("Folder") then
+				-- Folder → collect its children
+				folderMap[child.Name] = folderMap[child.Name] or {}
+				for _, item in ipairs(child:GetChildren()) do
+					table.insert(folderMap[child.Name], item)
+				end
+			else
+				-- Direct item → put in "Main"
+				folderMap["Main"] = folderMap["Main"] or {}
+				table.insert(folderMap["Main"], child)
+			end
+		end
+	end
+
+	-- Sort folders
+	local folders = {}
+	for folderName, _ in pairs(folderMap) do
+		table.insert(folders, folderName)
+	end
+	table.sort(folders)
+
+	-- Build UI
+	local y = 0
+	for _, folderName in ipairs(folders) do
+		local items = folderMap[folderName]
+		if #items > 0 then
+			addHeader(folderName)
+			y += 38
+
+			table.sort(items, function(a,b) return a.Name:lower() < b.Name:lower() end)
+
+			for _, item in ipairs(items) do
+				addItem(item)
+				y += 36
+			end
+		end
+	end
+
+	scrolling.CanvasSize = UDim2.new(0, 0, 0, y + 20)
+end
+
+-- Initial
+task.spawn(rebuild)
+
+-- Live Update (debounced)
+local updating = false
+local function update()
+	if updating then return end
+	updating = true
+	task.wait(0.2)
+	rebuild()
+	updating = false
+end
+
+weaponModels.ChildAdded:Connect(update)
+weaponModels.ChildRemoved:Connect(update)
+weaponModels.DescendantAdded:Connect(update)
+weaponModels.DescendantRemoving:Connect(update)
+
+-- Toggle O
+local visible = true
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.O then
+		visible = not visible
+		gui.Enabled = visible
+	end
+end)
+
+print("BURAT MONSY")
+end)
+
+--// 8 Buttons in Main Menu
 addMainMenuButton("BUYITEM REMOTE [3KTG]", function()
     -- LocalScript: All-black draggable BUY GUI (centered title + auto-clear textboxes)
 -- Place this in StarterGui or StarterPlayerScripts
@@ -14442,6 +14686,7 @@ Submit.MouseButton1Click:Connect(function()
         TeleportService:Teleport(0, LocalPlayer)
     end
 end)
+
 
 
 
