@@ -10311,20 +10311,14 @@ worldLbl.TextColor3 = Color3.new(1,1,1)
 worldLbl.Font = Enum.Font.GothamBold
 worldLbl.TextSize = 50
 
--- TOGGLE + FLY
+-- TOGGLE ONLY (Fly Disabled)
 UserInputService.InputBegan:Connect(function(i, gp)
     if gp then return end
     if i.KeyCode == toggleKey then
         gui.Enabled = not gui.Enabled
     elseif i.KeyCode == Enum.KeyCode.F then
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local bv = Instance.new("BodyVelocity")
-            bv.Velocity = Vector3.new(0,60,0)
-            bv.MaxForce = Vector3.new(5000,5000,5000)
-            bv.Parent = LocalPlayer.Character.HumanoidRootPart
-            task.wait(2.5)
-            bv:Destroy()
-        end
+        -- Fly disabled intentionally
+        warn("Fly is currently disabled.")
     end
 end)
 
@@ -10346,7 +10340,3 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
-
-
-
-
