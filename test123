@@ -4260,7 +4260,7 @@ task.spawn(function()
 end) 
 end)
 
-addBtn(tabs["ROLEPLAY MENU"].page, "THE BILLIONARE CITY", function()
+addBtn(tabs["ROLEPLAY MENU 2"].page, "THE BILLIONARE CITY", function()
  local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
@@ -10494,5 +10494,6 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
 
