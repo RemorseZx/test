@@ -229,7 +229,7 @@ contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 -- TABS
 local tabNames = {
-    "MAIN MENU", "ROLEPLAY MENU", "ROLEPLAY MENU 2", "BRING MENU", "AIMBOT MENU",
+    "MAIN MENU", "ROLEPLAY MENU", "ROLEPLAY MENU 2", "ROLEPLAY MENU 3", "BRING MENU", "AIMBOT MENU",
     "SCRIPT MENU", "SCRIPT MENU 2", "CASH MENU", "PLAYER MENU", "MONSY MENU"
 }
 local tabs = {}
@@ -5212,6 +5212,260 @@ UIS.InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
         gui.Enabled = not gui.Enabled
     end
+end)
+end)
+
+tabs["ROLEPLAY MENU 3"].page.Visible = true
+currentTab = tabs["ROLEPLAY MENU 3"]
+tabs["ROLEPLAY MENU 3"].btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- ADD BUTTON FUNCTION
+local function addBtn(page, text, callback)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -20, 0, 38)
+    b.BackgroundColor3 = Color3.new(0,0,0)
+    b.Text = text
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 14
+    b.Parent = page
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    local stroke = Instance.new("UIStroke", b)
+    stroke.Color = Color3.new(1,1,1)
+    stroke.Transparency = 0.8
+    b.MouseButton1Click:Connect(callback)
+    
+    task.spawn(function()
+        task.wait()
+        contentArea.CanvasSize = UDim2.new(0, 0, 0, page.UIListLayout.AbsoluteContentSize.Y + 20)
+    end)
+end
+
+addBtn(tabs["ROLEPLAY MENU 3"].page, "BAGONG BARYO SPAWN CAR", function()
+   	--// CAR SPAWNER GUI - All Black + Draggable + Correct Spawn
+local player = game.Players.LocalPlayer
+local rs = game:GetService("ReplicatedStorage")
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "CarSpawnGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 230)
+frame.Position = UDim2.new(0.5, -125, 0.5, -115)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Rounded Corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Text = "Choose Your Vehicle"
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+-- Button function (each with its own car name)
+local function createButton(displayName, carName, posY)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.8, 0, 0, 35)
+    btn.Position = UDim2.new(0.1, 0, 0, posY)
+    btn.Text = displayName
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.Parent = frame
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = btn
+
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    end)
+
+    btn.MouseButton1Click:Connect(function()
+        local args = {
+            [1] = carName
+        }
+
+        rs:WaitForChild("Car Dealership System", 9e9)
+            :WaitForChild("Events", 9e9)
+            :WaitForChild("SpawnCarEvent", 9e9)
+            :FireServer(unpack(args))
+    end)
+end
+
+-- Create Buttons
+createButton("Civic", "Civic", 50)
+createButton("Subaru", "subaru", 90)
+createButton("CarName", "CarName", 130)
+createButton("Dirtbike", "Dirtbike", 170) 
+end)
+
+addBtn(tabs["ROLEPLAY MENU 3"].page, "BAGONG BARYO REFRESH", function()
+    --// AUTO REFRESH GUI (All Black + Rounded Corners)
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoRefreshGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 180, 0, 100)
+frame.Position = UDim2.new(0.5, -90, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Rounded Corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "Auto Refresh"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = title
+
+-- Refresh Button
+local refreshButton = Instance.new("TextButton")
+refreshButton.Size = UDim2.new(0.8, 0, 0.4, 0)
+refreshButton.Position = UDim2.new(0.1, 0, 0.45, 0)
+refreshButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+refreshButton.Text = "Refresh"
+refreshButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshButton.Font = Enum.Font.Gotham
+refreshButton.TextSize = 16
+refreshButton.Parent = frame
+
+-- Button rounded
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 10)
+buttonCorner.Parent = refreshButton
+
+-- Hover effect
+refreshButton.MouseEnter:Connect(function()
+    refreshButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+refreshButton.MouseLeave:Connect(function()
+    refreshButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+end)
+
+-- Button Function
+refreshButton.MouseButton1Click:Connect(function()
+    local args = {
+        [1] = "Boy"
+    }
+    ReplicatedStorage:WaitForChild("SaveCharacterEvent", 9e9):FireServer(unpack(args))
+end)
+end)
+
+addBtn(tabs["ROLEPLAY MENU 3"].page, "THE BILLIONARE CITY REFRESH", function()
+    --// AUTO REFRESH GUI (All Black + Rounded Corners)
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoRefreshGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 180, 0, 100)
+frame.Position = UDim2.new(0.5, -90, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Rounded Corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "Auto Refresh"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = title
+
+-- Refresh Button
+local refreshButton = Instance.new("TextButton")
+refreshButton.Size = UDim2.new(0.8, 0, 0.4, 0)
+refreshButton.Position = UDim2.new(0.1, 0, 0.45, 0)
+refreshButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+refreshButton.Text = "Refresh"
+refreshButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshButton.Font = Enum.Font.Gotham
+refreshButton.TextSize = 16
+refreshButton.Parent = frame
+
+-- Button rounded
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 10)
+buttonCorner.Parent = refreshButton
+
+-- Hover effect
+refreshButton.MouseEnter:Connect(function()
+	refreshButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+refreshButton.MouseLeave:Connect(function()
+	refreshButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+end)
+
+-- Button Function (Updated System)
+refreshButton.MouseButton1Click:Connect(function()
+	local args = {
+		[1] = "Male";
+	}
+	ReplicatedStorage:WaitForChild("Morph", 9e9):FireServer(unpack(args))
 end)
 end)
 
@@ -10340,3 +10594,4 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
