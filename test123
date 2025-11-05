@@ -5394,6 +5394,111 @@ refreshButton.MouseButton1Click:Connect(function()
 end)
 end)
 
+addBtn(tabs["ROLEPLAY MENU 3"].page, "SET WAYPOINT AND REFRESH", function()
+ 	--// AUTO RESPAWN WAYPOINT GUI by Monsy & ChatGPT
+
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+-- Variables
+local savedWaypoint = nil
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "WaypointGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 170)
+frame.Position = UDim2.new(0.5, -100, 0.5, -85)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Rounded corners
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 12)
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 35)
+title.BackgroundTransparency = 1
+title.Text = "AUTO WAYPOINT"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+-- Function to create buttons easily
+local function createButton(text, order)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0.8, 0, 0, 35)
+    button.Position = UDim2.new(0.1, 0, 0, 40 + (order * 40))
+    button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 16
+
+    local btnCorner = Instance.new("UICorner", button)
+    btnCorner.CornerRadius = UDim.new(0, 10)
+    button.Parent = frame
+    return button
+end
+
+-- Create Buttons
+local setWaypointBtn = createButton("Set Waypoint", 0)
+local refreshBtn = createButton("Refresh", 1)
+local deleteWaypointBtn = createButton("Delete Waypoint", 2)
+
+--// BUTTON FUNCTIONS
+
+-- SET WAYPOINT
+setWaypointBtn.MouseButton1Click:Connect(function()
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        savedWaypoint = hrp.Position
+        player:WaitForChild("PlayerGui"):SetCore("SendNotification", {
+            Title = "Waypoint Set",
+            Text = "Respawn point saved!",
+            Duration = 2
+        })
+    end
+end)
+
+-- REFRESH BUTTON (fires SaveCharacterEvent)
+refreshBtn.MouseButton1Click:Connect(function()
+    local args = {
+        [1] = "Boy";
+    }
+    ReplicatedStorage:WaitForChild("SaveCharacterEvent", 9e9):FireServer(unpack(args))
+end)
+
+-- DELETE WAYPOINT
+deleteWaypointBtn.MouseButton1Click:Connect(function()
+    savedWaypoint = nil
+    player:WaitForChild("PlayerGui"):SetCore("SendNotification", {
+        Title = "Waypoint Deleted",
+        Text = "Respawn point removed!",
+        Duration = 2
+    })
+end)
+
+--// RESPAWN HANDLER
+player.CharacterAdded:Connect(function(char)
+    if savedWaypoint then
+        char:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(savedWaypoint)
+    end
+end)
+end)
+
 addBtn(tabs["ROLEPLAY MENU 3"].page, "THE BILLIONARE CITY REFRESH", function()
     --// AUTO REFRESH GUI (All Black + Rounded Corners)
 local Players = game:GetService("Players")
@@ -10594,4 +10699,5 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
