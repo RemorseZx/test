@@ -10897,6 +10897,341 @@ RefreshButton.MouseButton1Click:Connect(function()
 end)
 end)
 
+addBtn(tabs[""].page, "4", function()
+	-- LocalScript: TAONG GOMA — Buy Tool System (All Black + Rounded + BuyToolEvent)
+-- Place in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Remote: BuyToolEvent
+local buyRemote = ReplicatedStorage:WaitForChild("BuyToolEvent")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "CashMenuGUI"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+-- Frame (Pure Black + Rounded)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local frameCorner = Instance.new("UICorner", frame)
+frameCorner.CornerRadius = UDim.new(0, 12)
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "TAONG GOMA"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
+
+-- Item Name TextBox
+local itemBox = Instance.new("TextBox", frame)
+itemBox.Size = UDim2.new(1, -20, 0, 35)
+itemBox.Position = UDim2.new(0, 10, 0, 55)
+itemBox.PlaceholderText = "Enter Tool Name"
+itemBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+itemBox.BackgroundColor3 = Color3.new(0, 0, 0)
+itemBox.TextColor3 = Color3.new(1, 1, 1)
+itemBox.Font = Enum.Font.Gotham
+itemBox.TextSize = 14
+itemBox.ClearTextOnFocus = true
+
+local itemCorner = Instance.new("UICorner", itemBox)
+itemCorner.CornerRadius = UDim.new(0, 6)
+
+-- Amount TextBox
+local amountBox = Instance.new("TextBox", frame)
+amountBox.Size = UDim2.new(1, -20, 0, 35)
+amountBox.Position = UDim2.new(0, 10, 0, 100)
+amountBox.PlaceholderText = "Enter Amount"
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.BackgroundColor3 = Color3.new(0, 0, 0)
+amountBox.TextColor3 = Color3.new(1, 1, 1)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 14
+amountBox.ClearTextOnFocus = true
+
+local amountCorner = Instance.new("UICorner", amountBox)
+amountCorner.CornerRadius = UDim.new(0, 6)
+
+-- Buy Button
+local sendButton = Instance.new("TextButton", frame)
+sendButton.Size = UDim2.new(1, -20, 0, 40)
+sendButton.Position = UDim2.new(0, 10, 0, 145)
+sendButton.Text = "BUY"
+sendButton.BackgroundColor3 = Color3.new(0, 0, 0)
+sendButton.TextColor3 = Color3.new(1, 1, 1)
+sendButton.Font = Enum.Font.GothamBold
+sendButton.TextSize = 16
+
+local buttonCorner = Instance.new("UICorner", sendButton)
+buttonCorner.CornerRadius = UDim.new(0, 6)
+
+-- Feedback Label
+local feedback = Instance.new("TextLabel", frame)
+feedback.Size = UDim2.new(1, -20, 0, 20)
+feedback.Position = UDim2.new(0, 10, 1, -22)
+feedback.BackgroundTransparency = 1
+feedback.Font = Enum.Font.Gotham
+feedback.TextSize = 12
+feedback.TextColor3 = Color3.fromRGB(180, 180, 180)
+feedback.Text = ""
+
+-- Show feedback with auto-clear
+local function showFeedback(msg, duration)
+    feedback.Text = msg
+    task.delay(duration or 2, function()
+        if feedback and feedback.Parent then
+            feedback.Text = ""
+        end
+    end)
+end
+
+-- Buy Logic using BuyToolEvent
+local function buyItem()
+    local item = itemBox.Text
+    local amount = tonumber(amountBox.Text)
+
+    if item == "" or not amount or amount < 1 then
+        showFeedback("Invalid input!", 2)
+        return
+    end
+
+    -- Fire the remote: BuyToolEvent:FireServer("ToolName", amount)
+    buyRemote:FireServer(item, amount)
+    showFeedback("Buying: " .. item .. " x" .. amount, 2)
+end
+
+-- Connect events
+sendButton.MouseButton1Click:Connect(buyItem)
+itemBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then buyItem() end
+end)
+amountBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then buyItem() end
+end)
+
+-- Hover effect
+sendButton.MouseEnter:Connect(function()
+    sendButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+end)
+sendButton.MouseLeave:Connect(function()
+    sendButton.BackgroundColor3 = Color3.new(0, 0, 0)
+end)
+
+print("TAONG GOMA Buy System — Using BuyToolEvent")
+end)
+
+addBtn(tabs[""].page, "5", function()
+	-- LocalScript: Tools Viewer (All Black + Rounded + White Text + Pure Black Accents)
+-- Place in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Root: ReplicatedStorage.Tools
+local toolsFolder = ReplicatedStorage:WaitForChild("Tools")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "StorageSystemToolsViewer"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+-- Main Frame (Pure Black + Rounded)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 380, 0, 340)
+frame.Position = UDim2.new(0.5, -190, 0.25, 0)
+frame.AnchorPoint = Vector2.new(0.5, 0)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local frameCorner = Instance.new("UICorner", frame)
+frameCorner.CornerRadius = UDim.new(0, 12)
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 36)
+title.BackgroundTransparency = 1
+title.Text = "Tools Viewer"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.new(1, 1, 1)
+
+-- Subtitle
+local subtitle = Instance.new("TextLabel", frame)
+subtitle.Size = UDim2.new(1, -12, 0, 20)
+subtitle.Position = UDim2.new(0, 6, 0, 38)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Click tool to copy name"
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 13
+subtitle.TextColor3 = Color3.fromRGB(120, 120, 120)  -- Light gray → darker for contrast
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Scrolling Frame (Pure Black + Rounded)
+local scrolling = Instance.new("ScrollingFrame", frame)
+scrolling.Size = UDim2.new(1, -12, 1, -70)
+scrolling.Position = UDim2.new(0, 6, 0, 64)
+scrolling.BackgroundColor3 = Color3.new(0, 0, 0)
+scrolling.BorderSizePixel = 0
+scrolling.ScrollBarThickness = 6
+scrolling.ScrollBarImageColor3 = Color3.fromRGB(40, 40, 40)  -- Darker scrollbar
+
+local scrollCorner = Instance.new("UICorner", scrolling)
+scrollCorner.CornerRadius = UDim.new(0, 8)
+
+local layout = Instance.new("UIListLayout", scrolling)
+layout.SortOrder = Enum.SortOrder.Name
+layout.Padding = UDim.new(0, 3)
+
+-- Clear list
+local function clearList()
+    for _, child in scrolling:GetChildren() do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+end
+
+-- Add clickable tool button (rounded + white text)
+local function addTool(tool)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 28)
+    btn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    btn.BorderSizePixel = 0
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.TextColor3 = Color3.new(1, 1, 1)  -- Pure white text
+    btn.BackgroundTransparency = 0
+
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 6)
+
+    local relativePath = tool:GetFullName():match("^.-%.Tools%.(.+)$") or tool.Name
+    btn.Text = "   " .. relativePath
+
+    -- Click: Copy TOOL NAME ONLY
+    btn.MouseButton1Click:Connect(function()
+        setclipboard(tool.Name)
+        btn.TextColor3 = Color3.fromRGB(150, 255, 150)  -- Light green flash
+        btn.Text = "   " .. relativePath .. " [Copied!]"
+        task.wait(1.2)
+        btn.TextColor3 = Color3.new(1, 1, 1)
+        btn.Text = "   " .. relativePath
+    end)
+
+    -- Hover
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    end)
+
+    btn.Parent = scrolling
+end
+
+-- Rebuild list
+local function rebuildList()
+    clearList()
+    local toolList = {}
+    for _, obj in toolsFolder:GetDescendants() do
+        if obj:IsA("Tool") then
+            table.insert(toolList, obj)
+        end
+    end
+    table.sort(toolList, function(a, b)
+        return a.Name:lower() < b.Name:lower()
+    end)
+    for _, tool in toolList do
+        addTool(tool)
+    end
+    scrolling.CanvasSize = UDim2.new(0, 0, 0, #toolList * 31 + 10)
+end
+
+-- Initial build
+rebuildList()
+
+-- Live Updates
+local connections = {}
+local function connect(signal, callback)
+    local conn = signal:Connect(callback)
+    table.insert(connections, conn)
+end
+
+connect(toolsFolder.DescendantAdded, function(desc)
+    if desc:IsA("Tool") then
+        task.wait()
+        rebuildList()
+    end
+end)
+
+connect(toolsFolder.DescendantRemoving, function(desc)
+    if desc:IsA("Tool") then
+        rebuildList()
+    end
+end)
+
+-- Name/Parent change
+local bindings = {}
+local function bindTool(tool)
+    local c1 = tool:GetPropertyChangedSignal("Name"):Connect(rebuildList)
+    local c2 = tool:GetPropertyChangedSignal("Parent"):Connect(rebuildList)
+    return function()
+        c1:Disconnect()
+        c2:Disconnect()
+    end
+end
+
+local function updateBindings()
+    for _, unbind in pairs(bindings) do unbind() end
+    bindings = {}
+    for _, obj in toolsFolder:GetDescendants() do
+        if obj:IsA("Tool") then
+            bindings[obj] = bindTool(obj)
+        end
+    end
+end
+
+connect(toolsFolder.DescendantAdded, function(desc)
+    if desc:IsA("Tool") then updateBindings() end
+end)
+connect(toolsFolder.DescendantRemoving, function(desc)
+    if desc:IsA("Tool") then updateBindings() end
+end)
+updateBindings()
+
+-- Cleanup
+player.AncestryChanged:Connect(function()
+    if not player.Parent then
+        for _, conn in connections do conn:Disconnect() end
+        for _, unbind in pairs(bindings) do unbind() end
+        gui:Destroy()
+    end
+end)	
+end)
+
 
 -- ===================================
 -- PLAYER LIST (FULL)
@@ -11298,6 +11633,7 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
 
 
