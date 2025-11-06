@@ -5320,6 +5320,119 @@ createButton("CarName", "CarName", 130)
 createButton("Dirtbike", "Dirtbike", 170) 
 end)
 
+addBtn(tabs["ROLEPLAY MENU 3"].page, "THE BILLIONARE CITY SPAWN CAR", function()
+ 	--// Services
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+--// Target position
+local targetPosition = Vector3.new(-10.015, 5.02, 788.2)
+
+--// Function to teleport player
+local function teleportToTarget()
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+        print("Teleported!")
+    else
+        warn("HumanoidRootPart missing!")
+    end
+end
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "TeleportGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+--// Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 140)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0) -- all black
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 25)
+frameCorner.Parent = frame
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundColor3 = Color3.fromRGB(0,0,0) -- all black
+title.Text = "Teleport"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 25)
+titleCorner.Parent = title
+
+--// Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.AnchorPoint = Vector2.new(0, 0)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255,255,255)
+closeButton.BackgroundColor3 = Color3.fromRGB(30,30,30)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 14
+closeButton.Parent = frame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 12)
+closeCorner.Parent = closeButton
+
+closeButton.MouseButton1Click:Connect(function()
+    gui.Enabled = false
+end)
+
+--// Teleport Button
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(1, -30, 0, 40)
+teleportButton.Position = UDim2.new(0, 15, 1, -50)
+teleportButton.AnchorPoint = Vector2.new(0,1)
+teleportButton.Text = "Teleport"
+teleportButton.BackgroundColor3 = Color3.fromRGB(20,20,20)
+teleportButton.TextColor3 = Color3.fromRGB(255,255,255)
+teleportButton.Font = Enum.Font.GothamBold
+teleportButton.TextSize = 16
+teleportButton.Parent = frame
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 20)
+buttonCorner.Parent = teleportButton
+
+--// Hover Effect
+teleportButton.MouseEnter:Connect(function()
+    teleportButton.BackgroundColor3 = Color3.fromRGB(40,40,40)
+end)
+teleportButton.MouseLeave:Connect(function()
+    teleportButton.BackgroundColor3 = Color3.fromRGB(20,20,20)
+end)
+
+--// Teleport Logic
+teleportButton.MouseButton1Click:Connect(function()
+    teleportToTarget()
+end)
+
+--// Toggle GUI visibility with RightShift
+UIS.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+end)
+
 addBtn(tabs["ROLEPLAY MENU 3"].page, "BAGONG BARYO REFRESH", function()
     --// AUTO REFRESH GUI (All Black + Rounded Corners)
 local Players = game:GetService("Players")
@@ -10761,6 +10874,7 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
 
 
