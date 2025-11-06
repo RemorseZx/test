@@ -4273,8 +4273,9 @@ gui.Name = "GiveAllCashGUI"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
+--// Main Frame (sakto lang)
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 250) -- fixed size, fits everything
+frame.Size = UDim2.new(0, 350, 0, 300) -- sakto lang, hindi sobrang laki
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -4283,8 +4284,7 @@ frame.BorderColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
 frame.Draggable = true
 frame.Parent = gui
-
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
 --// Title
 local title = Instance.new("TextLabel")
@@ -4293,9 +4293,9 @@ title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 title.Text = "THE BILLIONARE CITY RP"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 16
+title.TextSize = 18
 title.Parent = frame
-Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
 
 --// Item List
 local items = {
@@ -4312,6 +4312,7 @@ local items = {
     {"SharkBone", "SharkBone"},
     {"Stick", "Stick"},
     {"Stone", "Stone"},
+    {"Oxy armor", "Oxy armor"},
     {"SwitchBlade", "SwitchBlade"}
 }
 
@@ -4319,26 +4320,26 @@ local selectedItem = nil
 
 --// Dropdown Button
 local dropdown = Instance.new("TextButton")
-dropdown.Size = UDim2.new(1, -20, 0, 30)
+dropdown.Size = UDim2.new(1, -20, 0, 35)
 dropdown.Position = UDim2.new(0, 10, 0, 50)
 dropdown.Text = "Select Item"
-dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+dropdown.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 dropdown.TextColor3 = Color3.new(1, 1, 1)
 dropdown.Font = Enum.Font.Gotham
-dropdown.TextSize = 14
+dropdown.TextSize = 16
 dropdown.Parent = frame
-Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 8)
 
---// Scrollable Dropdown Frame (fixed height)
+--// Scrollable Dropdown Frame
 local dropdownFrame = Instance.new("ScrollingFrame")
-dropdownFrame.Size = UDim2.new(1, -20, 0, 100) -- fixed height with scroll
-dropdownFrame.Position = UDim2.new(0, 10, 0, 85)
-dropdownFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+dropdownFrame.Size = UDim2.new(1, -20, 0, 120) -- mas maliit, sakto lang
+dropdownFrame.Position = UDim2.new(0, 10, 0, 90)
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 dropdownFrame.BorderSizePixel = 0
-dropdownFrame.ScrollBarThickness = 5
+dropdownFrame.ScrollBarThickness = 6
 dropdownFrame.Visible = false
 dropdownFrame.Parent = frame
-Instance.new("UICorner", dropdownFrame).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", dropdownFrame).CornerRadius = UDim.new(0, 8)
 
 --// Add Buttons inside dropdown
 dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, #items * 32)
@@ -4350,9 +4351,9 @@ for i, item in ipairs(items) do
     btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.Gotham
-    btn.TextSize = 12
+    btn.TextSize = 14
     btn.Parent = dropdownFrame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 
     btn.MouseButton1Click:Connect(function()
         selectedItem = item[2]
@@ -4365,18 +4366,18 @@ dropdown.MouseButton1Click:Connect(function()
     dropdownFrame.Visible = not dropdownFrame.Visible
 end)
 
---// Auto Buy Button (always visible)
+--// Auto Buy Button (medyo baba na)
 local toggle = Instance.new("TextButton")
-toggle.Size = UDim2.new(1, -20, 0, 35)
-toggle.Position = UDim2.new(0, 10, 1, -45) -- stays at bottom
+toggle.Size = UDim2.new(1, -20, 0, 40)
+toggle.Position = UDim2.new(0, 10, 1, -30) -- medyo baba pero hindi sobra
 toggle.AnchorPoint = Vector2.new(0, 1)
 toggle.Text = "Start Auto Buy"
-toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggle.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 toggle.TextColor3 = Color3.new(1, 1, 1)
 toggle.Font = Enum.Font.GothamBold
-toggle.TextSize = 14
+toggle.TextSize = 16
 toggle.Parent = frame
-Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 8)
 
 --// Logic
 local isAutoBuying = false
@@ -4390,7 +4391,7 @@ toggle.MouseButton1Click:Connect(function()
             ReplicatedStorage.BuyToolEvent:FireServer(selectedItem, -0)
             print("Auto-buying " .. selectedItem)
         end
-        task.wait(5)
+        task.wait(1)
     end
 end)
 
@@ -10760,6 +10761,7 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
 
 
