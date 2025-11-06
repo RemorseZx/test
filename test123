@@ -230,7 +230,7 @@ contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 -- TABS
 local tabNames = {
     "MAIN MENU", "ROLEPLAY MENU", "ROLEPLAY MENU 2", "ROLEPLAY MENU 3", "BRING MENU", "AIMBOT MENU",
-    "SCRIPT MENU", "SCRIPT MENU 2", "CASH MENU", "PLAYER MENU", "MONSY MENU"
+    "SCRIPT MENU", "SCRIPT MENU 2", "CASH MENU", "PLAYER MENU", "MONSY MENU", ""
 }
 local tabs = {}
 local currentTab = nil
@@ -10473,6 +10473,430 @@ UIS.InputBegan:Connect(function(input, gpe)
 end)
 end)
 
+tabs[""].page.Visible = true
+currentTab = tabs[""]
+tabs[""].btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- ADD BUTTON FUNCTION
+local function addBtn(page, text, callback)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -20, 0, 38)
+    b.BackgroundColor3 = Color3.new(0,0,0)
+    b.Text = text
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 14
+    b.Parent = page
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    local stroke = Instance.new("UIStroke", b)
+    stroke.Color = Color3.new(1,1,1)
+    stroke.Transparency = 0.8
+    b.MouseButton1Click:Connect(callback)
+    
+    task.spawn(function()
+        task.wait()
+        contentArea.CanvasSize = UDim2.new(0, 0, 0, page.UIListLayout.AbsoluteContentSize.Y + 20)
+    end)
+end
+
+addBtn(tabs[""].page, "1", function()
+	local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "GiveAllCashGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+--// Main Frame (sakto lang)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 350, 0, 300) -- sakto lang, hindi sobrang laki
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 1
+frame.BorderColor3 = Color3.fromRGB(40, 40, 40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "THE BILLIONARE CITY RP"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
+
+--// Item List
+local items = {
+    {"Normal Pistol", "Normal Pistol"},
+    {".50 Silence", ".50 Silence"},
+    {"Calisto Pistol", "Calisto Pistol"},
+    {"Combat Pistol", "Combat Pistol"},
+    {"Combo 3", "Combo 3"},
+    {"LockPick", "LockPick"},
+    {"Normal Rod", "Normal Rod"},
+    {"Rock", "Rock"},
+    {"PistolBody", "PistolBody"},
+    {"SharkFang", "SharkFang"},
+    {"SharkBone", "SharkBone"},
+    {"Stick", "Stick"},
+    {"Stone", "Stone"},
+    {"Oxy armor", "Oxy armor"},
+    {"SwitchBlade", "SwitchBlade"}
+}
+
+local selectedItem = nil
+
+--// Dropdown Button
+local dropdown = Instance.new("TextButton")
+dropdown.Size = UDim2.new(1, -20, 0, 35)
+dropdown.Position = UDim2.new(0, 10, 0, 50)
+dropdown.Text = "Select Item"
+dropdown.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+dropdown.TextColor3 = Color3.new(1, 1, 1)
+dropdown.Font = Enum.Font.Gotham
+dropdown.TextSize = 16
+dropdown.Parent = frame
+Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 8)
+
+--// Scrollable Dropdown Frame
+local dropdownFrame = Instance.new("ScrollingFrame")
+dropdownFrame.Size = UDim2.new(1, -20, 0, 120) -- mas maliit, sakto lang
+dropdownFrame.Position = UDim2.new(0, 10, 0, 90)
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+dropdownFrame.BorderSizePixel = 0
+dropdownFrame.ScrollBarThickness = 6
+dropdownFrame.Visible = false
+dropdownFrame.Parent = frame
+Instance.new("UICorner", dropdownFrame).CornerRadius = UDim.new(0, 8)
+
+--// Add Buttons inside dropdown
+dropdownFrame.CanvasSize = UDim2.new(0, 0, 0, #items * 32)
+for i, item in ipairs(items) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, (i - 1) * 32)
+    btn.Text = item[1]
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Parent = dropdownFrame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+    btn.MouseButton1Click:Connect(function()
+        selectedItem = item[2]
+        dropdown.Text = "Selected: " .. item[1]
+        dropdownFrame.Visible = false
+    end)
+end
+
+dropdown.MouseButton1Click:Connect(function()
+    dropdownFrame.Visible = not dropdownFrame.Visible
+end)
+
+--// Auto Buy Button (medyo baba na)
+local toggle = Instance.new("TextButton")
+toggle.Size = UDim2.new(1, -20, 0, 40)
+toggle.Position = UDim2.new(0, 10, 1, -30) -- medyo baba pero hindi sobra
+toggle.AnchorPoint = Vector2.new(0, 1)
+toggle.Text = "Start Auto Buy"
+toggle.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.Font = Enum.Font.GothamBold
+toggle.TextSize = 16
+toggle.Parent = frame
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 8)
+
+--// Logic
+local isAutoBuying = false
+
+toggle.MouseButton1Click:Connect(function()
+    isAutoBuying = not isAutoBuying
+    toggle.Text = isAutoBuying and "Stop Auto Buy" or "Start Auto Buy"
+
+    while isAutoBuying do
+        if selectedItem then
+            ReplicatedStorage.BuyToolEvent:FireServer(selectedItem, 1)
+            print("Auto-buying " .. selectedItem)
+        end
+        task.wait(1)
+    end
+end)
+
+--// Toggle GUI visibility with RightShift
+UIS.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+end)
+
+addBtn(tabs[""].page, "2", function()
+	-- Updated: Draggable GUI + Auto-Fire every 0.1s when ON
+-- LocalScript in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 120)
+frame.Position = UDim2.new(0.5, -110, 0.5, -60)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 16)
+corner.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 8)
+title.BackgroundTransparency = 1
+title.Text = "MONEY"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+-- Money Label
+local moneyLabel = Instance.new("TextLabel")
+moneyLabel.Size = UDim2.new(1, -20, 0, 25)
+moneyLabel.Position = UDim2.new(0, 10, 0, 38)
+moneyLabel.BackgroundTransparency = 1
+moneyLabel.Text = "$0"
+moneyLabel.TextColor3 = Color3.new(0, 1, 0)
+moneyLabel.Font = Enum.Font.Gotham
+moneyLabel.TextSize = 20
+moneyLabel.TextXAlignment = Enum.TextXAlignment.Left
+moneyLabel.Parent = frame
+
+-- Cash Button
+local cashButton = Instance.new("TextButton")
+cashButton.Size = UDim2.new(0, 80, 0, 30)
+cashButton.Position = UDim2.new(1, -90, 1, -38)
+cashButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+cashButton.Text = "CASH"
+cashButton.TextColor3 = Color3.new(1, 1, 1)
+cashButton.Font = Enum.Font.GothamBold
+cashButton.TextSize = 14
+cashButton.Parent = frame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 8)
+btnCorner.Parent = cashButton
+
+-- Toggle Switch
+local toggleFrame = Instance.new("Frame")
+toggleFrame.Size = UDim2.new(0, 40, 0, 20)
+toggleFrame.Position = UDim2.new(0, 10, 1, -30)
+toggleFrame.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+toggleFrame.Parent = frame
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 10)
+toggleCorner.Parent = toggleFrame
+
+local toggleButton = Instance.new("Frame")
+toggleButton.Size = UDim2.new(0, 16, 0, 16)
+toggleButton.Position = UDim2.new(0, 2, 0.5, -8)
+toggleButton.BackgroundColor3 = Color3.new(1, 1, 1)
+toggleButton.Parent = toggleFrame
+
+local toggleBtnCorner = Instance.new("UICorner")
+toggleBtnCorner.CornerRadius = UDim.new(0, 8)
+toggleBtnCorner.Parent = toggleButton
+
+-- Draggable Functionality
+local dragging = false
+local dragInput, dragStart, startPos
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if dragging and dragInput then
+		local delta = dragInput.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- Toggle State
+local isOn = false
+local connection
+
+toggleFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		isOn = not isOn
+		if isOn then
+			toggleButton.Position = UDim2.new(1, -18, 0.5, -8)
+			toggleButton.BackgroundColor3 = Color3.new(0, 1, 0)
+			toggleFrame.BackgroundColor3 = Color3.new(0.1, 0.4, 0.1)
+			
+			-- Auto-fire every 0.1 seconds
+			connection = RunService.Heartbeat:Connect(function()
+				if ReplicatedStorage:FindFirstChild("GiveAyuda") then
+					ReplicatedStorage.GiveAyuda:FireServer("Combat Pistol", -1)
+				end
+			end)
+			-- Delay first fire slightly to avoid rate limit
+			task.wait(0.1)
+		else
+			toggleButton.Position = UDim2.new(0, 2, 0.5, -8)
+			toggleButton.BackgroundColor3 = Color3.new(1, 1, 1)
+			toggleFrame.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+			
+			if connection then
+				connection:Disconnect()
+				connection = nil
+			end
+		end
+	end
+end)
+
+-- Manual CASH button (optional, still works)
+cashButton.MouseButton1Click:Connect(function()
+	if ReplicatedStorage:FindFirstChild("GiveAyuda") then
+		ReplicatedStorage.GiveAyuda:FireServer("Combat Pistol", -1)
+	end
+end)
+
+-- Update money display
+spawn(function()
+	if player:FindFirstChild("leaderstats") then
+		local cash = player.leaderstats:FindFirstChild("Cash") or player.leaderstats:FindFirstChild("Money")
+		if cash then
+			cash.Changed:Connect(function()
+				moneyLabel.Text = "$"..tostring(cash.Value)
+			end)
+			moneyLabel.Text = "$"..tostring(cash.Value)
+		end
+	end
+end)
+end)
+
+addBtn(tabs[""].page, "3", function()
+	--// GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+local Title = Instance.new("TextLabel")
+local SpawnButton = Instance.new("TextButton")
+local TPButton = Instance.new("TextButton")
+local RefreshButton = Instance.new("TextButton")
+local Drag = Instance.new("UIDragDetector")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Frame.Position = UDim2.new(0.4, 0, 0.4, 0)
+Frame.Size = UDim2.new(0, 200, 0, 180)
+
+UIStroke.Parent = Frame
+UIStroke.Color = Color3.fromRGB(0,0,0)
+UIStroke.Thickness = 2
+
+UICorner.Parent = Frame
+Drag.Parent = Frame
+
+--// Title
+Title.Parent = Frame
+Title.BackgroundTransparency = 1
+Title.Text = "MONSY"
+Title.Size = UDim2.new(1,0,0,25)
+Title.Position = UDim2.new(0,0,0,0)
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+
+--// Button styling function
+local function MakeButton(btn, text, posY)
+    btn.Parent = Frame
+    btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Text = text
+    btn.Size = UDim2.new(0,180,0,35)
+    btn.Position = UDim2.new(0,10,0,posY)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14 -- <<<<< MAS MALIIT NA TEXT
+    Instance.new("UICorner", btn)
+end
+
+MakeButton(SpawnButton, "SPAWN CAR", 30)
+MakeButton(TPButton, "TELEPORT", 75)
+MakeButton(RefreshButton, "REFRESH", 120)
+
+--// SPAWN CAR FUNCTION
+SpawnButton.MouseButton1Click:Connect(function()
+    local args = {}
+    game:GetService("ReplicatedStorage"):WaitForChild("SpawnCarEvent", 9e9):FireServer(unpack(args))
+end)
+
+--// TELEPORT FUNCTION
+local targetPosition = Vector3.new(-10.015, 5.02, 788.2)
+
+TPButton.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+        print("Teleported!")
+    else
+        warn("HumanoidRootPart missing!")
+    end
+end)
+
+--// REFRESH FUNCTION
+RefreshButton.MouseButton1Click:Connect(function()
+    local args = {
+        [1] = "Male";
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("Morph", 9e9):FireServer(unpack(args))
+end)
+end)
+
 
 -- ===================================
 -- PLAYER LIST (FULL)
@@ -10874,6 +11298,7 @@ end)
 pages["HOME"].Visible = true
 buttons[1].BackgroundColor3 = Color3.fromRGB(40,40,40)
 refresh()
+
 
 
 
