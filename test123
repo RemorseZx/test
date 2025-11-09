@@ -4861,26 +4861,50 @@ end)
 
 --// 4 Buttons in Roleplay Script
 addMainMenuButton("DOMINION REFRESH (MONSY)", function()
-    -- LocalScript (Client-Side)
+-- LocalScript (Client)
 
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local TweenService = game:GetService("TweenService")
 
--- Define the target position
-local targetPosition = Vector3.new(-2059.056640625, 82.64264678955078, -1830.01953125)
+-- IMAGE (PALITAN MO YUNG ASSET ID DITO)
+local imageId = "rbxassetid://130763663944218" -- Your Image
 
--- Function to teleport the player immediately
-local function teleportToTarget()
-    -- Check if HumanoidRootPart exists and teleport immediately
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
-    else
-        print("Error: HumanoidRootPart missing.")
-    end
-end
+-- GUI CREATION (FULL SCREEN IMAGE 4 SECONDS)
+local playerGui = player:WaitForChild("PlayerGui")
+local screen = Instance.new("ScreenGui")
+screen.ResetOnSpawn = false
+screen.IgnoreGuiInset = true -- IMPORTANT (removes ROBLOX top icon bar gap)
+screen.Parent = playerGui
 
--- Teleport as soon as the character is fully loaded
-teleportToTarget()
+local image = Instance.new("ImageLabel")
+image.Parent = screen
+image.Size = UDim2.new(1, 0, 1, 0) -- Full screen EXACTLY
+image.Position = UDim2.new(0, 0, 0, 0)
+image.BackgroundColor3 = Color3.new(0,0,0)
+image.BackgroundTransparency = 0
+image.Image = imageId
+image.ImageTransparency = 0
+
+-- Hide after 4 seconds
+task.spawn(function()
+    task.wait(4.5)
+    screen:Destroy()
+end)
+
+-- TARGET POSITION
+local targetPosition = Vector3.new(-2005.1800537109375, 92.90731811523438, -1774.9578857421875)
+
+-- TELEPORT (SUPER FAST MOVE)
+local tweenInfo = TweenInfo.new(
+    0.001, -- MAX FAST
+    Enum.EasingStyle.Linear,
+    Enum.EasingDirection.Out
+)
+
+local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPosition)})
+tween:Play()
 end)
 
 --// 4 Buttons in Roleplay Script
@@ -15939,4 +15963,5 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
