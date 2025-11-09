@@ -6900,169 +6900,245 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
-addMainMenuButton("ALADIA KEYBIND USE (MONSY)", function()
-local Players = game:GetService("Players")
+addMainMenuButton("DOMINION BANK GUI (MONSY)", function()
+	local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
-local playerGui = player:FindFirstChildOfClass("PlayerGui") or Instance.new("ScreenGui")
-playerGui.ResetOnSpawn = false
-playerGui.Name = "Aladia_GUI_Executor"
-playerGui.Parent = player:FindFirstChildOfClass("PlayerGui") or game.CoreGui
+local pgui = player:WaitForChild("PlayerGui")
 
--- Utility: make rounded frame (uses UICorner)
-local function new(name, props)
-    local obj = Instance.new(props.Class or "Frame")
-    obj.Name = name
-    for k,v in pairs(props) do
-        if k ~= "Class" then
-            pcall(function() obj[k] = v end)
-        end
-    end
-    return obj
-end
+-- ScreenGui
+local FantasyGUI = Instance.new("ScreenGui")
+FantasyGUI.Name = "FantasyBank"
+FantasyGUI.ResetOnSpawn = false
+FantasyGUI.Parent = pgui
 
--- Main container
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AladiaUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 360, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -180, 0.3, -150)
+MainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+MainFrame.BorderSizePixel = 0
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.Parent = FantasyGUI
 
-local main = new("MainFrame", {
-    Class = "Frame",
-    Parent = screenGui,
-    AnchorPoint = Vector2.new(0.5, 0.5),
-    Position = UDim2.new(0.5, 0, 0.35, 0),
-    Size = UDim2.new(0, 340, 0, 140),
-    BackgroundColor3 = Color3.fromRGB(0,0,0),
-    BackgroundTransparency = 0,
-    BorderSizePixel = 0,
-})
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 18)
+FrameCorner.Parent = MainFrame
 
-local uiCorner = Instance.new("UICorner", main)
-uiCorner.CornerRadius = UDim.new(0, 12)
+local FrameStroke = Instance.new("UIStroke")
+FrameStroke.Color = Color3.new(0, 0, 0)
+FrameStroke.Thickness = 2
+FrameStroke.Parent = MainFrame
 
--- Title
-local title = Instance.new("TextLabel")
-title.Name = "Title"
-title.Parent = main
-title.Size = UDim2.new(1, 0, 0, 34)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundTransparency = 1
-title.Text = "ALADIA"
-title.TextColor3 = Color3.fromRGB(255,255,255)
-title.TextScaled = true
-title.Font = Enum.Font.GothamBold
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 45)
+TitleBar.BackgroundColor3 = Color3.new(0, 0, 0)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
 
--- Divider line
-local line = Instance.new("Frame")
-line.Parent = main
-line.Size = UDim2.new(0.9, 0, 0, 1)
-line.Position = UDim2.new(0.05, 0, 0, 36)
-line.BackgroundColor3 = Color3.fromRGB(255,255,255)
-line.BackgroundTransparency = 0.7
+local TitleBarCorner = Instance.new("UICorner")
+TitleBarCorner.CornerRadius = UDim.new(0, 18)
+TitleBarCorner.Parent = TitleBar
 
--- Buttons container
-local buttonsFrame = Instance.new("Frame")
-buttonsFrame.Parent = main
-buttonsFrame.Size = UDim2.new(1, -16, 1, -52)
-buttonsFrame.Position = UDim2.new(0, 8, 0, 44)
-buttonsFrame.BackgroundTransparency = 1
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "DOMINION CITY"
+TitleLabel.Font = Enum.Font.GothamBlack
+TitleLabel.TextSize = 24
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Parent = TitleBar
 
-local function makeButton(text, keyText)
-    local btn = Instance.new("TextButton")
-    btn.Parent = buttonsFrame
-    btn.Size = UDim2.new(0.48, 0, 1, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-    btn.BorderSizePixel = 0
-    btn.Text = text .. "  ("..keyText..")"
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.TextScaled = true
-    btn.Font = Enum.Font.Gotham
-    btn.AutoButtonColor = true
-    local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim.new(0, 10)
-    return btn
-end
-
-local btnArmor = makeButton("Armor", "Q")
-btnArmor.Position = UDim2.new(0, 0, 0, 0)
-
-local btnBandage = makeButton("Bandage", "E")
-btnBandage.Position = UDim2.new(0.52, 0, 0, 0)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 36, 0, 36)
+CloseBtn.Position = UDim2.new(1, -40, 0, 4)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Text = "X"
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 20
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.Parent = TitleBar
+CloseBtn.MouseButton1Click:Connect(function()
+    FantasyGUI:Destroy()
+end)
 
 -- Dragging
 local dragging, dragInput, dragStart, startPos
-local function update(input)
+local function updateInput(input)
     local delta = input.Position - dragStart
-    main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
-        startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
-
-main.InputBegan:Connect(function(input)
+TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = main.Position
+        startPos = MainFrame.Position
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
         end)
     end
 end)
-
-main.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
 end)
-
 UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
+    if dragging and input == dragInput then updateInput(input) end
 end)
 
--- Remote fire function (uses your provided calls)
-local function fireUse(itemName, amount)
-    local success, err = pcall(function()
-        local inv = game:GetService("ReplicatedStorage"):WaitForChild("inventoryShared", 9e9)
-        local comm = inv:WaitForChild("commEvents", 9e9)
-        local ie = comm:WaitForChild("inventoryEvents", 9e9)
-        local use = ie:WaitForChild("use", 9e9)
-        local args = {[1] = itemName; [2] = amount}
-        use:FireServer(unpack(args))
+-- Amount
+local AmountLabel = Instance.new("TextLabel")
+AmountLabel.Size = UDim2.new(0, 100, 0, 30)
+AmountLabel.Position = UDim2.new(0, 30, 0, 60)
+AmountLabel.BackgroundTransparency = 1
+AmountLabel.Text = "Amount:"
+AmountLabel.Font = Enum.Font.Gotham
+AmountLabel.TextSize = 16
+AmountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+AmountLabel.Parent = MainFrame
+
+local AmountBox = Instance.new("TextBox")
+AmountBox.Size = UDim2.new(0, 200, 0, 36)
+AmountBox.Position = UDim2.new(0, 130, 0, 57)
+AmountBox.PlaceholderText = "Amount"
+AmountBox.Text = ""
+AmountBox.ClearTextOnFocus = true
+AmountBox.Font = Enum.Font.Gotham
+AmountBox.TextSize = 16
+AmountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+AmountBox.BackgroundColor3 = Color3.new(0, 0, 0)
+AmountBox.BorderSizePixel = 1
+AmountBox.BorderColor3 = Color3.fromRGB(255, 255, 255)
+AmountBox.Parent = MainFrame
+
+local AmountCorner = Instance.new("UICorner")
+AmountCorner.CornerRadius = UDim.new(0, 10)
+AmountCorner.Parent = AmountBox
+
+-- USERNAME (formerly ID)
+local IDLabel = Instance.new("TextLabel")
+IDLabel.Size = UDim2.new(0, 100, 0, 30)
+IDLabel.Position = UDim2.new(0, 30, 0, 100)
+IDLabel.BackgroundTransparency = 1
+IDLabel.Text = "USERNAME:"
+IDLabel.Font = Enum.Font.Gotham
+IDLabel.TextSize = 16
+IDLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+IDLabel.Parent = MainFrame
+
+local IDBox = Instance.new("TextBox")
+IDBox.Size = UDim2.new(0, 200, 0, 36)
+IDBox.Position = UDim2.new(0, 130, 0, 97)
+IDBox.PlaceholderText = "Username"
+IDBox.Text = ""
+IDBox.ClearTextOnFocus = true
+IDBox.Font = Enum.Font.Gotham
+IDBox.TextSize = 16
+IDBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+IDBox.BackgroundColor3 = Color3.new(0, 0, 0)
+IDBox.BorderSizePixel = 1
+IDBox.BorderColor3 = Color3.fromRGB(255, 255, 255)
+IDBox.Parent = MainFrame
+
+local IDCorner = Instance.new("UICorner")
+IDCorner.CornerRadius = UDim.new(0, 10)
+IDCorner.Parent = IDBox
+
+-- Modes
+local modes = {"WITHDRAW", "DEPOSIT", "TRANSFER"}
+local currentMode = "WITHDRAW"
+local modeButtons = {}
+
+for i, mode in ipairs(modes) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 100, 0, 38)
+    btn.Position = UDim2.new(0, 30 + (i-1)*110, 0, 145)
+    btn.BackgroundColor3 = Color3.new(0, 0, 0)
+    btn.Text = mode
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 15
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BorderSizePixel = 1
+    btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Parent = MainFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        currentMode = mode
+        for _, b in ipairs(modeButtons) do
+            TweenService:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0, 0, 0)}):Play()
+        end
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
+        IDLabel.Visible = (mode == "TRANSFER")
+        IDBox.Visible = (mode == "TRANSFER")
     end)
-    if not success then
-        warn("Aladia GUI: failed to use ", itemName, " - ", err)
+
+    table.insert(modeButtons, btn)
+    if i == 1 then
+        TweenService:Create(btn, TweenInfo.new(0), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
     end
 end
 
--- Button clicks
-btnArmor.MouseButton1Click:Connect(function()
-    fireUse("Armor", 1)
-end)
+-- Execute SYSTEM (UPDATED)
+local ExecuteBtn = Instance.new("TextButton")
+ExecuteBtn.Size = UDim2.new(0, 300, 0, 45)
+ExecuteBtn.Position = UDim2.new(0.5, -150, 0, 200)
+ExecuteBtn.BackgroundColor3 = Color3.new(0, 0, 0)
+ExecuteBtn.Text = "EXECUTE"
+ExecuteBtn.Font = Enum.Font.GothamBold
+ExecuteBtn.TextSize = 18
+ExecuteBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExecuteBtn.BorderSizePixel = 2
+ExecuteBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ExecuteBtn.Parent = MainFrame
 
-btnBandage.MouseButton1Click:Connect(function()
-    fireUse("Bandage", 1)
-end)
+local ExecCorner = Instance.new("UICorner")
+ExecCorner.CornerRadius = UDim.new(0, 12)
+ExecCorner.Parent = ExecuteBtn
 
--- Keybinds
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Q then
-        fireUse("Armor", 1)
-    elseif input.KeyCode == Enum.KeyCode.E then
-        fireUse("Bandage", 1)
+ExecuteBtn.MouseButton1Click:Connect(function()
+    local amount = tonumber(AmountBox.Text) or 0
+    local args
+
+    if currentMode == "WITHDRAW" then
+        args = { "Withdraw", amount }
+
+    elseif currentMode == "DEPOSIT" then
+        args = { "Deposit", amount }
+
+    elseif currentMode == "TRANSFER" then
+        local username = tostring(IDBox.Text)
+        if username == "" then return end
+        args = { "Transfer", amount, username }
     end
+
+    -- NEW ATM SYSTEM
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Aaron", 9e9)
+        :WaitForChild("Shared", 9e9)
+        :WaitForChild("Remotes", 9e9)
+        :WaitForChild("AtmRemote", 9e9)
+        :FireServer(unpack(args))
 end)
 
--- Cleanup: destroy existing GUI if script re-runs
-for _,v in pairs(playerGui:GetChildren()) do
-    if v.Name == "AladiaUI" and v ~= screenGui then
-        v:Destroy()
-    end
-end
+-- Glow
+local Glow = Instance.new("ImageLabel")
+Glow.Size = UDim2.new(1, 60, 1, 60)
+Glow.Position = UDim2.new(0, -30, 0, -30)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://2415002530"
+Glow.ImageColor3 = Color3.fromRGB(30, 30, 30)
+Glow.ImageTransparency = 0.8
+Glow.ScaleType = Enum.ScaleType.Slice
+Glow.SliceCenter = Rect.new(100, 100, 100, 100)
+Glow.Parent = MainFrame
+
+IDLabel.Visible = false
+IDBox.Visible = false
 end)
 
 local function addMainMenuButton(text, callback)
@@ -15963,6 +16039,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
