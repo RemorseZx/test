@@ -6388,6 +6388,77 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
+addMainMenuButton("BAGONG BARYO CONFISCATE GUI (MONSY)", function()
+	--// SERVICES
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+--// REMOTES
+local SearchRemote = ReplicatedStorage:WaitForChild("Police"):WaitForChild("Search")
+
+--// GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 250, 0, 140)
+MainFrame.Position = UDim2.new(0.5, -125, 0.4, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner", MainFrame)
+UICorner.CornerRadius = UDim.new(0, 12)
+
+local Title = Instance.new("TextLabel")
+Title.Text = "SEARCH"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Parent = MainFrame
+
+local TextBox = Instance.new("TextBox")
+TextBox.PlaceholderText = "Enter Player Name"
+TextBox.Font = Enum.Font.Gotham
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(255,255,255)
+TextBox.PlaceholderColor3 = Color3.fromRGB(255,255,255)
+TextBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+TextBox.Size = UDim2.new(1, -20, 0, 35)
+TextBox.Position = UDim2.new(0, 10, 0, 40)
+TextBox.Parent = MainFrame
+
+local TextBoxCorner = Instance.new("UICorner", TextBox)
+TextBoxCorner.CornerRadius = UDim.new(0, 8)
+
+local SearchButton = Instance.new("TextButton")
+SearchButton.Text = "SEARCH"
+SearchButton.Font = Enum.Font.GothamBold
+SearchButton.TextColor3 = Color3.fromRGB(255,255,255)
+SearchButton.TextSize = 16
+SearchButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+SearchButton.Size = UDim2.new(1, -20, 0, 35)
+SearchButton.Position = UDim2.new(0, 10, 0, 85)
+SearchButton.Parent = MainFrame
+
+local ButtonCorner = Instance.new("UICorner", SearchButton)
+ButtonCorner.CornerRadius = UDim.new(0, 8)
+
+SearchButton.MouseButton1Click:Connect(function()
+    local targetName = TextBox.Text
+    if targetName ~= "" then
+        local targetPlayer = Players:FindFirstChild(targetName)
+        if targetPlayer and targetPlayer.Character then
+            SearchRemote:FireServer(targetPlayer.Character)
+        end
+    end
+end)
+end)
+
+--// 8 Buttons in Main Menu
 addMainMenuButton("AFK COMSERV BETA TEST (MONSY)", function()
 	local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -15868,3 +15939,4 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
