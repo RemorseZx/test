@@ -4860,7 +4860,7 @@ end)
 
 
 --// 4 Buttons in Roleplay Script
-addMainMenuButton("DOMINION REFRESH (MONSY)", function()
+addMainMenuButton("DOMINION REFRESH CLICK 2 TIMES TO REFRESH (MONSY)", function()
 -- LocalScript (Client)
 
 local player = game.Players.LocalPlayer
@@ -16060,6 +16060,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
