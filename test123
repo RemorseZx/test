@@ -6919,6 +6919,249 @@ game:GetService("RunService").Heartbeat:Connect(function()
 end)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("DOMINION CITY BANK GUI (MONSY)", function()
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local pgui = player:WaitForChild("PlayerGui")
+
+-- ScreenGui
+local FantasyGUI = Instance.new("ScreenGui")
+FantasyGUI.Name = "FantasyBank"
+FantasyGUI.ResetOnSpawn = false
+FantasyGUI.Parent = pgui
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 360, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -180, 0.3, -150)
+MainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+MainFrame.BorderSizePixel = 0
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.Parent = FantasyGUI
+
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 18)
+FrameCorner.Parent = MainFrame
+
+local FrameStroke = Instance.new("UIStroke")
+FrameStroke.Color = Color3.new(0, 0, 0)
+FrameStroke.Thickness = 2
+FrameStroke.Parent = MainFrame
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 45)
+TitleBar.BackgroundColor3 = Color3.new(0, 0, 0)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleBarCorner = Instance.new("UICorner")
+TitleBarCorner.CornerRadius = UDim.new(0, 18)
+TitleBarCorner.Parent = TitleBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "DOMINION CITY"
+TitleLabel.Font = Enum.Font.GothamBlack
+TitleLabel.TextSize = 24
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Parent = TitleBar
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 36, 0, 36)
+CloseBtn.Position = UDim2.new(1, -40, 0, 4)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Text = "X"
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 20
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.Parent = TitleBar
+CloseBtn.MouseButton1Click:Connect(function()
+    FantasyGUI:Destroy()
+end)
+
+-- Dragging
+local dragging, dragInput, dragStart, startPos
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == dragInput then updateInput(input) end
+end)
+
+-- Amount
+local AmountLabel = Instance.new("TextLabel")
+AmountLabel.Size = UDim2.new(0, 100, 0, 30)
+AmountLabel.Position = UDim2.new(0, 30, 0, 60)
+AmountLabel.BackgroundTransparency = 1
+AmountLabel.Text = "Amount:"
+AmountLabel.Font = Enum.Font.Gotham
+AmountLabel.TextSize = 16
+AmountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+AmountLabel.Parent = MainFrame
+
+local AmountBox = Instance.new("TextBox")
+AmountBox.Size = UDim2.new(0, 200, 0, 36)
+AmountBox.Position = UDim2.new(0, 130, 0, 57)
+AmountBox.PlaceholderText = "Amount"
+AmountBox.Text = ""
+AmountBox.ClearTextOnFocus = true
+AmountBox.Font = Enum.Font.Gotham
+AmountBox.TextSize = 16
+AmountBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+AmountBox.BackgroundColor3 = Color3.new(0, 0, 0)
+AmountBox.BorderSizePixel = 1
+AmountBox.BorderColor3 = Color3.fromRGB(255, 255, 255)
+AmountBox.Parent = MainFrame
+
+local AmountCorner = Instance.new("UICorner")
+AmountCorner.CornerRadius = UDim.new(0, 10)
+AmountCorner.Parent = AmountBox
+
+-- USERNAME (formerly ID)
+local IDLabel = Instance.new("TextLabel")
+IDLabel.Size = UDim2.new(0, 100, 0, 30)
+IDLabel.Position = UDim2.new(0, 30, 0, 100)
+IDLabel.BackgroundTransparency = 1
+IDLabel.Text = "USERNAME:"
+IDLabel.Font = Enum.Font.Gotham
+IDLabel.TextSize = 16
+IDLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+IDLabel.Parent = MainFrame
+
+local IDBox = Instance.new("TextBox")
+IDBox.Size = UDim2.new(0, 200, 0, 36)
+IDBox.Position = UDim2.new(0, 130, 0, 97)
+IDBox.PlaceholderText = "Username"
+IDBox.Text = ""
+IDBox.ClearTextOnFocus = true
+IDBox.Font = Enum.Font.Gotham
+IDBox.TextSize = 16
+IDBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+IDBox.BackgroundColor3 = Color3.new(0, 0, 0)
+IDBox.BorderSizePixel = 1
+IDBox.BorderColor3 = Color3.fromRGB(255, 255, 255)
+IDBox.Parent = MainFrame
+
+local IDCorner = Instance.new("UICorner")
+IDCorner.CornerRadius = UDim.new(0, 10)
+IDCorner.Parent = IDBox
+
+-- Modes
+local modes = {"WITHDRAW", "DEPOSIT", "TRANSFER"}
+local currentMode = "WITHDRAW"
+local modeButtons = {}
+
+for i, mode in ipairs(modes) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 100, 0, 38)
+    btn.Position = UDim2.new(0, 30 + (i-1)*110, 0, 145)
+    btn.BackgroundColor3 = Color3.new(0, 0, 0)
+    btn.Text = mode
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 15
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BorderSizePixel = 1
+    btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Parent = MainFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        currentMode = mode
+        for _, b in ipairs(modeButtons) do
+            TweenService:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0, 0, 0)}):Play()
+        end
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
+        IDLabel.Visible = (mode == "TRANSFER")
+        IDBox.Visible = (mode == "TRANSFER")
+    end)
+
+    table.insert(modeButtons, btn)
+    if i == 1 then
+        TweenService:Create(btn, TweenInfo.new(0), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
+    end
+end
+
+-- Execute SYSTEM (UPDATED)
+local ExecuteBtn = Instance.new("TextButton")
+ExecuteBtn.Size = UDim2.new(0, 300, 0, 45)
+ExecuteBtn.Position = UDim2.new(0.5, -150, 0, 200)
+ExecuteBtn.BackgroundColor3 = Color3.new(0, 0, 0)
+ExecuteBtn.Text = "EXECUTE"
+ExecuteBtn.Font = Enum.Font.GothamBold
+ExecuteBtn.TextSize = 18
+ExecuteBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExecuteBtn.BorderSizePixel = 2
+ExecuteBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ExecuteBtn.Parent = MainFrame
+
+local ExecCorner = Instance.new("UICorner")
+ExecCorner.CornerRadius = UDim.new(0, 12)
+ExecCorner.Parent = ExecuteBtn
+
+ExecuteBtn.MouseButton1Click:Connect(function()
+    local amount = tonumber(AmountBox.Text) or 0
+    local args
+
+    if currentMode == "WITHDRAW" then
+        args = { "Withdraw", amount }
+
+    elseif currentMode == "DEPOSIT" then
+        args = { "Deposit", amount }
+
+    elseif currentMode == "TRANSFER" then
+        local username = tostring(IDBox.Text)
+        if username == "" then return end
+        args = { "Transfer", amount, username }
+    end
+
+    -- NEW ATM SYSTEM
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Aaron", 9e9)
+        :WaitForChild("Shared", 9e9)
+        :WaitForChild("Remotes", 9e9)
+        :WaitForChild("AtmRemote", 9e9)
+        :FireServer(unpack(args))
+end)
+
+-- Glow
+local Glow = Instance.new("ImageLabel")
+Glow.Size = UDim2.new(1, 60, 1, 60)
+Glow.Position = UDim2.new(0, -30, 0, -30)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://2415002530"
+Glow.ImageColor3 = Color3.fromRGB(30, 30, 30)
+Glow.ImageTransparency = 0.8
+Glow.ScaleType = Enum.ScaleType.Slice
+Glow.SliceCenter = Rect.new(100, 100, 100, 100)
+Glow.Parent = MainFrame
+
+IDLabel.Visible = false
+IDBox.Visible = false
+end)
+
+
 local function addMainMenuButton(text, callback)
 	local panel = allTabPanels["BRING MENU"]
 	if not panel then return end
@@ -15817,6 +16060,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
