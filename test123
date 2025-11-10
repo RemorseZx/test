@@ -7161,6 +7161,198 @@ IDLabel.Visible = false
 IDBox.Visible = false
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("SILENT AIM BIGHEAD UNIVERSAL (MONSY)", function()
+    --// CONFIG
+_G.HeadSize = 1
+_G.HeadTransparency = 1.0   -- FIXED
+_G.Disabled = false         -- BigHead ON by default
+
+--// SERVICES
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+
+--// ORIGINAL STORAGE
+local Original = {}
+
+local function storeOriginal(player, head)
+	if not Original[player] then
+		Original[player] = {
+			Size = head.Size,
+			Transparency = head.Transparency,
+			Color = head.BrickColor,
+			Material = head.Material,
+			Collide = head.CanCollide,
+			Massless = head.Massless
+		}
+	end
+end
+
+local function updateHead(head, player)
+	if not head or player == LocalPlayer then return end
+	storeOriginal(player, head)
+
+	if not _G.Disabled then
+		head.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+		head.Transparency = _G.HeadTransparency
+		head.BrickColor = BrickColor.new("Really red")
+		head.Material = Enum.Material.Neon
+		head.CanCollide = false
+		head.Massless = true
+	else
+		local data = Original[player]
+		if data then
+			head.Size = data.Size
+			head.Transparency = data.Transparency
+			head.BrickColor = data.Color
+			head.Material = data.Material
+			head.CanCollide = data.Collide
+			head.Massless = data.Massless
+		end
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+			pcall(function()
+				updateHead(p.Character.Head, p)
+			end)
+		end
+	end
+end)
+
+Players.PlayerAdded:Connect(function(p)
+	p.CharacterAdded:Connect(function(c)
+		c:WaitForChild("Head")
+		updateHead(c.Head, p)
+	end)
+end)
+
+--// GUI BASE
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local function round(obj, r) local c = Instance.new("UICorner", obj); c.CornerRadius = UDim.new(0, r) end
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 220, 0, 170)
+Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.BackgroundColor3 = Color3.new(0,0,0)
+Frame.Active = true
+Frame.Draggable = true
+round(Frame, 10)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 25)
+Title.BackgroundTransparency = 1
+Title.Text = "SILENT AIM (BIGHEAD)"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 16
+
+-------------------------------------------------
+-- SIZE SLIDER (BigHead + FOV size)
+-------------------------------------------------
+local SliderBack = Instance.new("Frame", Frame)
+SliderBack.Size = UDim2.new(0.8, 0, 0, 6)
+SliderBack.Position = UDim2.new(0.1, 0, 0.35, 0)
+SliderBack.BackgroundColor3 = Color3.new(0,0,0)
+round(SliderBack, 8)
+
+local SliderFill = Instance.new("Frame", SliderBack)
+SliderFill.Size = UDim2.new(0, 0, 1, 0)
+SliderFill.BackgroundColor3 = Color3.new(1,1,1)
+round(SliderFill, 8)
+
+local SliderButton = Instance.new("TextButton", SliderBack)
+SliderButton.Size = UDim2.new(0, 20, 0, 20)
+SliderButton.Position = UDim2.new(0, -10, 0.5, -10)
+SliderButton.BackgroundColor3 = Color3.new(1,1,1)
+SliderButton.Text = ""
+round(SliderButton, 10)
+
+local SizeLabel = Instance.new("TextLabel", Frame)
+SizeLabel.Size = UDim2.new(1, 0, 0, 20)
+SizeLabel.Position = UDim2.new(0, 0, 0.45, 0)
+SizeLabel.BackgroundTransparency = 1
+SizeLabel.TextColor3 = Color3.new(1,1,1)
+SizeLabel.Text = "Size: " .. _G.HeadSize
+
+-------------------------------------------------
+-- FOV CIRCLE
+-------------------------------------------------
+local Circle = Drawing.new("Circle")
+Circle.Color = Color3.new(1,1,1)
+Circle.Thickness = 2
+Circle.NumSides = 100
+Circle.Radius = 60
+Circle.Filled = false
+Circle.Visible = true
+
+RunService.RenderStepped:Connect(function()
+	local m = game.Workspace.CurrentCamera.ViewportSize / 2
+	Circle.Position = Vector2.new(m.X, m.Y)
+end)
+
+local draggingSize = false
+local function updateSize(percent)
+	percent = math.clamp(percent, 0, 1)
+	SliderFill.Size = UDim2.new(percent, 0, 1, 0)
+	SliderButton.Position = UDim2.new(percent, -10, 0.5, -10)
+
+	_G.HeadSize = 1 + percent * 34
+	SizeLabel.Text = "Size: " .. string.format("%.1f", _G.HeadSize)
+
+	Circle.Radius = _G.HeadSize * 5
+end
+
+SliderButton.MouseButton1Down:Connect(function() draggingSize = true end)
+UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then draggingSize = false end end)
+UIS.InputChanged:Connect(function(input)
+	if draggingSize and input.UserInputType == Enum.UserInputType.MouseMovement then
+		updateSize((UIS:GetMouseLocation().X - SliderBack.AbsolutePosition.X) / SliderBack.AbsoluteSize.X)
+	end
+end)
+
+-------------------------------------------------
+-- BIGHEAD TOGGLE
+-------------------------------------------------
+local ToggleButton = Instance.new("TextButton", Frame)
+ToggleButton.Size = UDim2.new(0.8, 0, 0, 25)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.65, 0)
+ToggleButton.BackgroundColor3 = Color3.new(0,0,0)
+ToggleButton.TextColor3 = Color3.new(1,1,1)
+ToggleButton.Text = "Enabled"
+round(ToggleButton, 10)
+
+ToggleButton.MouseButton1Click:Connect(function()
+	_G.Disabled = not _G.Disabled
+	ToggleButton.Text = _G.Disabled and "Disabled" or "Enabled"
+end)
+
+-------------------------------------------------
+-- HIDE / SHOW FOV BUTTON
+-------------------------------------------------
+local FOVToggle = Instance.new("TextButton", Frame)
+FOVToggle.Size = UDim2.new(0.8, 0, 0, 25)
+FOVToggle.Position = UDim2.new(0.1, 0, 0.83, 0)
+FOVToggle.BackgroundColor3 = Color3.new(0,0,0)
+FOVToggle.TextColor3 = Color3.new(1,1,1)
+FOVToggle.Text = "FOV: Visible"
+round(FOVToggle, 10)
+
+local fovHidden = false
+
+FOVToggle.MouseButton1Click:Connect(function()
+	fovHidden = not fovHidden
+	Circle.Visible = not fovHidden
+	FOVToggle.Text = fovHidden and "FOV: Hidden" or "FOV: Visible"
+end)
+
+updateSize((_G.HeadSize - 1) / 34)
+end)
+
 
 local function addMainMenuButton(text, callback)
 	local panel = allTabPanels["BRING MENU"]
@@ -16060,12 +16252,3 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
-
-
-
-
-
-
-
-
-
