@@ -9861,7 +9861,7 @@ Instance.new("UICorner", sendButton).CornerRadius = UDim.new(0, 6)
 sendButton.MouseButton1Click:Connect(function()
     local amount = tonumber(amountBox.Text)
     if amount then
-        game:GetService("ReplicatedStorage").GunStoreFolder.BuyTool:FireServer("Suppressed Pistols", -amount)
+        game:GetService("ReplicatedStorage").UwUCafeFolder.BuyTool:FireServer("Prime", -amount)
     else
         warn("Invalid amount!")
     end
@@ -15817,6 +15817,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
