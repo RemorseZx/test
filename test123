@@ -7353,6 +7353,317 @@ end)
 updateSize((_G.HeadSize - 1) / 34)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("BAGONG BARYO AFK COMSERV (MONSY)", function()
+	local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- [ GLOBALS FOR TOGGLES ]
+_G.InstantEnabled = false
+_G.TeleportEnabled = false
+_G.TriggerEnabled = false
+_G.AnimationEnabled = false
+_G.CameraEnabled = false  -- NEW CAMERA TOGGLE
+
+-- [ CAMERA SHAKE CONNECTION ]
+local Camera = workspace.CurrentCamera
+local cameraConnection
+
+local function setupCamera()
+    local speed = 25     -- bilis ng alog
+    local amount = 0.15  -- lakas ng alog
+
+    -- disconnect old connection para hindi mag stack
+    if cameraConnection then
+        cameraConnection:Disconnect()
+        cameraConnection = nil
+    end
+
+    cameraConnection = RunService.RenderStepped:Connect(function()
+        if not _G.CameraEnabled then return end
+
+        -- INSTANT LEFT-RIGHT SHAKE (NO ROTATION)
+        local flip = math.sign(math.sin(tick() * speed)) * amount
+        Camera.CFrame = Camera.CFrame * CFrame.new(flip, 0, 0)
+    end)
+end
+
+-- [ INSTANT CONNECTIONS ]
+local instantConnections = {}
+local function setupInstant()
+    for _, prompt in ipairs(workspace:GetDescendants()) do
+        if prompt:IsA("ProximityPrompt") then
+            prompt.HoldDuration = 0
+        end
+    end
+    instantConnections.newPrompt = workspace.DescendantAdded:Connect(function(descendant)
+        if descendant:IsA("ProximityPrompt") then
+            descendant.HoldDuration = 0
+        end
+    end)
+    instantConnections.ePress = UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.KeyCode == Enum.KeyCode.E then
+            local char = player.Character
+            if not char then return end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            for _, prompt in ipairs(workspace:GetDescendants()) do
+                if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                    local dist = (prompt.Parent.Position - hrp.Position).Magnitude
+                    if dist < prompt.MaxActivationDistance then
+                        fireproximityprompt(prompt)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- [ TRIGGER CONNECTION ]
+local triggerConnection
+local reconnectTask
+local function setupTrigger()
+    local Workspace = workspace
+    local indexes = {1024,1023,1013,1014,1018,1017,1028,1025,1026,1031,1027,1016}
+    local cleaningSpot = Workspace:FindFirstChild("CleaningSpot")
+    
+    local function getAllTargets()
+        local children = Workspace:GetChildren()
+        local prompts = {}
+        for _, idx in pairs(indexes) do
+            local part = children[idx]
+            if part then
+                local prompt = part:FindFirstChild("ProximityPrompt")
+                if prompt then table.insert(prompts, prompt) end
+            end
+        end
+        if cleaningSpot and cleaningSpot:FindFirstChild("ProximityPrompt") then
+            table.insert(prompts, cleaningSpot.ProximityPrompt)
+        end
+        return prompts
+    end
+    
+    triggerConnection = RunService.Heartbeat:Connect(function()
+        if not _G.TriggerEnabled then return end
+        local prompts = getAllTargets()
+        for _, prompt in pairs(prompts) do
+            fireproximityprompt(prompt, 0)
+        end
+    end)
+    
+    reconnectTask = task.spawn(function()
+        while _G.TriggerEnabled do
+            task.wait(5)
+            if not triggerConnection.Connected then
+                triggerConnection = RunService.Heartbeat:Connect(function()
+                    if not _G.TriggerEnabled then return end
+                    local prompts = getAllTargets()
+                    for _, prompt in pairs(prompts) do
+                        fireproximityprompt(prompt, 0)
+                    end
+                end)
+            end
+        end
+    end)
+end
+
+-- [ ANIMATION CONNECTIONS ]
+local animationConnections = {}
+local function setupAnimation()
+    local function onCharacterAdded(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        local animate = character:WaitForChild("Animate")
+        
+        local sectionsToDisable = {"idle", "fall", "climb", "toolnone", "sit", "freefall"}
+        for _, section in pairs(sectionsToDisable) do
+            if animate:FindFirstChild(section) then
+                for _, anim in pairs(animate[section]:GetChildren()) do
+                    if anim:IsA("StringValue") then
+                        anim.AnimationId = ""
+                    end
+                end
+            end
+        end
+        
+        local connection = RunService.Heartbeat:Connect(function()
+            if not _G.AnimationEnabled then return end
+            for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+                local animId = track.Animation.AnimationId
+                if not string.find(animId:lower(), "walk") and 
+                   not string.find(animId:lower(), "run") and 
+                   not string.find(animId:lower(), "swim") and
+                   track.Priority ~= Enum.AnimationPriority.Movement then
+                    track:Stop(0)
+                end
+            end
+        end)
+        
+        animationConnections[character] = connection
+        character.AncestryChanged:Connect(function()
+            if not character.Parent and animationConnections[character] then
+                animationConnections[character]:Disconnect()
+                animationConnections[character] = nil
+            end
+        end)
+    end
+    
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+    animationConnections.charAdded = player.CharacterAdded:Connect(onCharacterAdded)
+end
+
+-- [ GUI SETUP ]
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FarmGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 240, 0, 260)  -- TALLER FOR 5th TOGGLE
+frame.Position = UDim2.new(0.5, -120, 0.5, -130)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 16)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 36)
+title.Position = UDim2.new(0, 0, 0, 6)
+title.BackgroundTransparency = 1
+title.Text = "BYPASS COMSERVE"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 16
+title.Parent = frame
+
+-- [ TOGGLE FUNCTION ]
+local function createToggle(name, posY, toggleVar, onEnableFunc, onDisableFunc)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0, 90, 0, 24)
+    label.Position = UDim2.new(0, 16, 0, posY)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 15
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Size = UDim2.new(0, 56, 0, 28)
+    toggleFrame.Position = UDim2.new(0, 168, 0, posY - 2)
+    toggleFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    toggleFrame.Parent = frame
+
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 14)
+    toggleCorner.Parent = toggleFrame
+
+    local toggleButton = Instance.new("Frame")
+    toggleButton.Size = UDim2.new(0, 24, 0, 24)
+    toggleButton.Position = UDim2.new(0, 4, 0.5, -12)
+    toggleButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    toggleButton.Parent = toggleFrame
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 12)
+    btnCorner.Parent = toggleButton
+
+    toggleFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            _G[toggleVar] = not _G[toggleVar]
+            local enabled = _G[toggleVar]
+            if enabled then
+                if onEnableFunc then onEnableFunc() end
+                toggleButton.Position = UDim2.new(1, -28, 0.5, -12)
+                toggleButton.BackgroundColor3 = Color3.new(0, 0.8, 0)
+                toggleFrame.BackgroundColor3 = Color3.new(0, 0.2, 0)
+                label.TextColor3 = Color3.new(0, 1, 0)
+            else
+                if onDisableFunc then onDisableFunc() end
+                toggleButton.Position = UDim2.new(0, 4, 0.5, -12)
+                toggleButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+                toggleFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+                label.TextColor3 = Color3.new(1, 1, 1)
+            end
+        end
+    end)
+end
+
+-- [ CREATE TOGGLES ]
+createToggle("INSTANT", 56, "InstantEnabled", setupInstant, function()
+    for _, conn in pairs(instantConnections) do if conn then conn:Disconnect() end end
+    instantConnections = {}
+end)
+
+createToggle("TELEPORT", 90, "TeleportEnabled", function()
+    local TP_POSITION = CFrame.new(503.6737060546875, 4.950774192810059, -765.2892456054688)
+    if player.Character then
+        local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+        if rootPart then rootPart.CFrame = TP_POSITION end
+    end
+    player.CharacterAdded:Once(function(character)
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+        rootPart.CFrame = TP_POSITION
+    end)
+end)
+
+createToggle("TRIGGER", 124, "TriggerEnabled", setupTrigger, function()
+    if triggerConnection then triggerConnection:Disconnect() end
+    if reconnectTask then task.cancel(reconnectTask) end
+end)
+
+createToggle("ANIMATION", 158, "AnimationEnabled", setupAnimation, function()
+    for _, conn in pairs(animationConnections) do if conn then conn:Disconnect() end end
+    animationConnections = {}
+end)
+
+createToggle("CAMERA", 192, "CameraEnabled", setupCamera, function()
+    if cameraConnection then cameraConnection:Disconnect() end
+end)
+
+-- [ CLOSE BUTTON ]
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0, 28, 0, 28)
+close.Position = UDim2.new(1, -36, 0, 8)
+close.BackgroundColor3 = Color3.new(0, 0, 0)
+close.BorderSizePixel = 1
+close.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+close.Text = "X"
+close.TextColor3 = Color3.new(1, 1, 1)
+close.Font = Enum.Font.GothamBold
+close.TextSize = 18
+close.Parent = frame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = close
+
+close.MouseButton1Click:Connect(function()
+    _G.InstantEnabled = false
+    _G.TeleportEnabled = false
+    _G.TriggerEnabled = false
+    _G.AnimationEnabled = false
+    _G.CameraEnabled = false
+    for _, conn in pairs(instantConnections) do if conn then conn:Disconnect() end end
+    if triggerConnection then triggerConnection:Disconnect() end
+    if reconnectTask then task.cancel(reconnectTask) end
+    for _, conn in pairs(animationConnections) do if conn then conn:Disconnect() end end
+    if cameraConnection then cameraConnection:Disconnect() end
+    screenGui:Destroy()
+end)
+end)
+
 
 local function addMainMenuButton(text, callback)
 	local panel = allTabPanels["BRING MENU"]
@@ -16252,3 +16563,4 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
