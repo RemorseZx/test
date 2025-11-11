@@ -272,7 +272,7 @@ end
 local topTabNames = {
     "MAIN MENU", "ROLEPLAY MENU", "ROLEPLAY MENU 2", "LATEST SCRIPT",
     "BRING MENU", "AIMBOT MENU", "SCRIPT MENU", "CASH MENU", "PLAYER MENU", 
-	"MONSY MENU", "THE BILLIONARE", "RP TELEPORT"
+	"MONSY MENU", "THE BILLIONARE", "RP TELEPORT", "ADMIN PANEL"
 }
 
 local function createTopTab(name)
@@ -16314,6 +16314,80 @@ end
 teleportToTarget()
 end)
 
+local function addMainMenuButton(text, callback)
+	local panel = allTabPanels["MAIN MENU"]
+	if not panel then return end
+	local btn = new("TextButton", {
+		Size = UDim2.new(1, -16, 0, 38),
+		BackgroundColor3 = Color3.fromRGB(0,0,0),
+		TextColor3 = Color3.new(1,1,1),
+		Font = Enum.Font.GothamSemibold,
+		TextSize = 14,
+		Text = text,
+		AutoButtonColor = false,
+		Parent = panel,
+	})
+	new("UICorner", {CornerRadius = UDim.new(0,6), Parent = btn})
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20,20,20)}):Play()
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0,0,0)}):Play()
+	end)
+	btn.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("NOTE : ONLY WHITLISTED USER CAN USE THIS !", function()
+	
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("ADMIN PANEL KICK ALL / SPAWN BTOOLS / TROLL / ADMIN GUN / SET SKY", function()
+	local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+--// WHITELIST BY USERID (MAS SAFE)
+local whitelist = {
+    [8172987891] = true,  
+    [6226066651] = true,
+	[6213315646] = true,  
+    [8625608074] = true,
+	[2757397228] = true,
+	[4602182711] = true,
+	[5804682562] = true,
+	[2577804945] = true,
+	[7761002961] = true,
+	[8970489737] = true,
+	[8174283950] = true,
+	[846984019] = true,
+    [player.UserId] = true -- OPTIONAL: auto allow self
+}
+
+--// CHECK PANEL
+local panel = player:WaitForChild("PlayerGui"):WaitForChild("ExtraUI"):WaitForChild("AdminPanel")
+panel.Transparency = 0.1
+panel.Visible = false -- default hidden
+
+--// ONLY ALLOWED CAN USE
+if not whitelist[player.UserId] then
+    warn("ACCESS DENIED: You are not whitelisted.")
+    return
+end
+
+--// KEYBIND (V)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.V then
+        panel.Visible = not panel.Visible
+    end
+end)
+end) 
+
 ----------------------------------------------------------------
 -- PLAYER LIST – BLACK MINI BUTTONS
 ----------------------------------------------------------------
@@ -16563,4 +16637,5 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
