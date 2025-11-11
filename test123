@@ -16388,6 +16388,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 end) 
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("CLICK THIS TO SET THE SKY IF YOU HAVE BTOOLS IN YOUR INVENTORY", function()
+	loadstring(game:HttpGet('https://pastebin.com/raw/KwTDPUgM', true))()
+end)
+
 ----------------------------------------------------------------
 -- PLAYER LIST – BLACK MINI BUTTONS
 ----------------------------------------------------------------
@@ -16637,6 +16642,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
