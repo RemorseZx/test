@@ -16355,6 +16355,7 @@ local player = Players.LocalPlayer
 local whitelist = {
     [8172987891] = true,  
     [6226066651] = true,
+	[9925586155] = true,
 	[6213315646] = true,  
     [8625608074] = true,
 	[8708504286] = true,
@@ -16643,6 +16644,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
