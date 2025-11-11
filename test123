@@ -16315,7 +16315,7 @@ teleportToTarget()
 end)
 
 local function addMainMenuButton(text, callback)
-	local panel = allTabPanels["MAIN MENU"]
+	local panel = allTabPanels["ADMIN PANEL"]
 	if not panel then return end
 	local btn = new("TextButton", {
 		Size = UDim2.new(1, -16, 0, 38),
@@ -16637,5 +16637,6 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
