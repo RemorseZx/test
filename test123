@@ -16395,6 +16395,56 @@ addMainMenuButton("CLICK THIS TO SET THE SKY IF YOU HAVE BTOOLS IN YOUR INVENTOR
 	loadstring(game:HttpGet('https://pastebin.com/raw/KwTDPUgM', true))()
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("KILL ALL ONLY WHITELISTED CAN USE THIS ! ", function()
+	--// SERVICES
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+--// WHITELIST BY USERID (MAS SAFE)
+local whitelist = {
+    [8172987891] = true,
+    [6226066651] = true,
+    [9925586155] = true,
+    [6213315646] = true,
+    [8625608074] = true,
+    [8708504286] = true,
+    [2757397228] = true,
+    [4602182711] = true,
+    [5804682562] = true,
+    [2577804945] = true,
+    [7761002961] = true,
+    [8970489737] = true,
+    [8174283950] = true,
+    [846984019] = true,
+    [player.UserId] = true  -- Auto-include ang sarili mo (safe)
+}
+
+--// CHECK IF WHITELISTED
+if not whitelist[player.UserId] then
+    warn("Access denied: User not whitelisted.")
+    return -- Hihinto ang script kung hindi whitelisted
+end
+
+--// MAIN SCRIPT (SAFE NA TO RUN)
+for _, targetPlayer in ipairs(Players:GetPlayers()) do
+    local args = {
+        targetPlayer.Name,
+        "MONSY TO GAGO"
+    }
+    
+    player
+        :WaitForChild("PlayerGui")
+        :WaitForChild("ExtraUI")
+        :WaitForChild("AdminPanel")
+        :WaitForChild("MainFrame")
+        :WaitForChild("Frame")
+        :WaitForChild("Event")
+        :FireServer(unpack(args))
+end
+end)
+
 ----------------------------------------------------------------
 -- PLAYER LIST – BLACK MINI BUTTONS
 ----------------------------------------------------------------
@@ -16644,6 +16694,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
