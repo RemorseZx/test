@@ -6920,6 +6920,296 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
+addMainMenuButton("CAR BOOSTER / B TO BOOST / J TO OPEN SETTINGS (MONSY)", function()
+	local DEFAULTS = {
+    MAX_BOOST_FORCE = 150,
+    BOOST_INCREMENT = 3,
+    BOOST_INTERVAL = 0.05,
+}
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+local boosting = false
+local currentSeat = nil
+local boostConnection = nil
+local boostConfig = table.clone(DEFAULTS)
+local settingsVisible = false
+
+local function getVehicleMainPart(seat)
+    local model = seat:FindFirstAncestorOfClass("Model")
+    if model and model.PrimaryPart then return model.PrimaryPart end
+    for _, p in ipairs(model:GetDescendants()) do
+        if p:IsA("BasePart") and p.Name:lower():find("chassis") then return p end
+    end
+    return seat
+end
+
+local function startBoost(seat)
+    if boosting or not seat then return end
+    boosting = true
+    local part = getVehicleMainPart(seat)
+    if not part then return end
+
+    local trail = Instance.new("ParticleEmitter")
+    trail.Texture = "rbxassetid://242830270"
+    trail.Color = ColorSequence.new(Color3.new(1, 1, 1))
+    trail.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 0)})
+    trail.Rate = 50
+    trail.Speed = NumberRange.new(5, 10)
+    trail.Lifetime = NumberRange.new(0.3)
+    trail.Transparency = NumberSequence.new(0.2, 1)
+    trail.VelocitySpread = 30
+    trail.Name = "BoostTrail"
+    trail.Parent = part
+
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://72642478827550"
+    sound.Looped = true
+    sound.Volume = 0.4
+    sound.Name = "BoostSound"
+    sound.Parent = part
+    sound:Play()
+
+    boostConnection = RunService.Heartbeat:Connect(function()
+        if not boosting then return end
+        local speed = part.AssemblyLinearVelocity.Magnitude
+        local label = player.PlayerGui:FindFirstChild("BoostGui") and player.PlayerGui.BoostGui:FindFirstChild("SpeedLabel")
+        if label then
+            label.Text = "Speed: " .. math.floor(speed + 0.5)
+            label.Visible = true
+        end
+
+        local currentVelocity = part.AssemblyLinearVelocity
+        local forwardDir = seat.CFrame.LookVector
+        local forwardSpeed = currentVelocity:Dot(forwardDir)
+        local additionalSpeed = math.min(boostConfig.BOOST_INCREMENT, boostConfig.MAX_BOOST_FORCE - forwardSpeed)
+        local newVelocity = currentVelocity + (forwardDir * additionalSpeed)
+        part.AssemblyLinearVelocity = newVelocity
+    end)
+end
+
+local function stopBoost()
+    boosting = false
+    if boostConnection then boostConnection:Disconnect() end
+    boostConnection = nil
+
+    if currentSeat then
+        local part = getVehicleMainPart(currentSeat)
+        if part then
+            local trail = part:FindFirstChild("BoostTrail")
+            if trail then trail:Destroy() end
+            local sound = part:FindFirstChild("BoostSound")
+            if sound then sound:Stop() sound:Destroy() end
+        end
+    end
+
+    local label = player.PlayerGui:FindFirstChild("BoostGui") and player.PlayerGui.BoostGui:FindFirstChild("SpeedLabel")
+    if label then label.Visible = false end
+end
+
+local function createSlider(name, min, max, default, onChanged)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -16, 0, 38)
+    container.BackgroundTransparency = 1
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0.5, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name .. ": " .. tostring(default)
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.Gotham
+    label.TextScaled = true
+    label.Parent = container
+
+    local slider = Instance.new("TextButton")
+    slider.Size = UDim2.new(1, 0, 0.45, 0)
+    slider.Position = UDim2.new(0, 0, 0.55, 0)
+    slider.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    slider.Text = ""
+    slider.AutoButtonColor = false
+    slider.Parent = container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0.6, 0)
+    corner.Parent = slider
+
+    local fill = Instance.new("Frame")
+    fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BorderSizePixel = 0
+    fill.Parent = slider
+
+    local fillCorner = Instance.new("UICorner")
+    fillCorner.CornerRadius = UDim.new(0.6, 0)
+    fillCorner.Parent = fill
+
+    local dragging = false
+    local function updateFromInput(input)
+        local scale = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
+        fill.Size = UDim2.new(scale, 0, 1, 0)
+        local value = min + (max - min) * scale
+        value = tonumber(string.format("%.1f", value))
+        label.Text = name .. ": " .. value
+        onChanged(value)
+    end
+
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            updateFromInput(input)
+        end
+    end)
+    slider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    slider.InputChanged:Connect(function(input)
+        if dragging then updateFromInput(input) end
+    end)
+
+    return container
+end
+
+local function createBoostGui()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "BoostGui"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = player:WaitForChild("PlayerGui")
+
+    local speedLabel = Instance.new("TextLabel")
+    speedLabel.Name = "SpeedLabel"
+    speedLabel.Size = UDim2.new(0, 100, 0, 35)
+    speedLabel.Position = UDim2.new(0, 20, 0.5, -85)
+    speedLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    speedLabel.TextColor3 = Color3.new(1, 1, 1)
+    speedLabel.BackgroundTransparency = 0.3
+    speedLabel.TextScaled = true
+    speedLabel.Font = Enum.Font.GothamBold
+    speedLabel.Text = "Speed: 0"
+    speedLabel.Visible = false
+    speedLabel.Parent = gui
+    local lCorner = Instance.new("UICorner", speedLabel)
+    lCorner.CornerRadius = UDim.new(0.2, 0)
+
+    local settingsPanel = Instance.new("Frame")
+    settingsPanel.Name = "SettingsPanel"
+    settingsPanel.Size = UDim2.new(0, 200, 0, 180)
+    settingsPanel.Position = UDim2.new(1, -220, 0.5, 0)  -- FIXED RIGHT + CENTERED VERTICALLY
+    settingsPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    settingsPanel.Visible = false
+    settingsPanel.Parent = gui
+    local panelCorner = Instance.new("UICorner", settingsPanel)
+    panelCorner.CornerRadius = UDim.new(0.1, 0)
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 25)
+    title.BackgroundTransparency = 1
+    title.Text = "MONSY BOOST"
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.GothamBold
+    title.TextScaled = true
+    title.Parent = settingsPanel
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Padding = UDim.new(0, 2)
+    UIListLayout.FillDirection = Enum.FillDirection.Vertical
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Parent = settingsPanel
+
+    local resetBtn = Instance.new("TextButton")
+    resetBtn.Size = UDim2.new(1, -16, 0, 30)
+    resetBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    resetBtn.Text = "Reset"
+    resetBtn.TextColor3 = Color3.new(1, 1, 1)
+    resetBtn.TextScaled = true
+    resetBtn.Font = Enum.Font.GothamBold
+    resetBtn.LayoutOrder = 0
+    resetBtn.Parent = settingsPanel
+    local rCorner = Instance.new("UICorner", resetBtn)
+    rCorner.CornerRadius = UDim.new(0.6, 0)
+
+    local sliders = {
+        createSlider("Max Force", 50, 1000, boostConfig.MAX_BOOST_FORCE, function(v) boostConfig.MAX_BOOST_FORCE = v end),
+        createSlider("Increment", 1, 20, boostConfig.BOOST_INCREMENT, function(v) boostConfig.BOOST_INCREMENT = v end),
+        createSlider("Interval", 0.01, 0.5, boostConfig.BOOST_INTERVAL, function(v) boostConfig.BOOST_INTERVAL = v end),
+    }
+    for i, slider in ipairs(sliders) do
+        slider.LayoutOrder = i + 1
+        slider.Parent = settingsPanel
+    end
+
+    resetBtn.MouseButton1Click:Connect(function()
+        boostConfig = table.clone(DEFAULTS)
+        for _, s in ipairs(sliders) do s:Destroy() end
+        sliders = {
+            createSlider("Max Force", 50, 1000, boostConfig.MAX_BOOST_FORCE, function(v) boostConfig.MAX_BOOST_FORCE = v end),
+            createSlider("Increment", 1, 20, boostConfig.BOOST_INCREMENT, function(v) boostConfig.BOOST_INCREMENT = v end),
+            createSlider("Interval", 0.01, 0.5, boostConfig.BOOST_INTERVAL, function(v) boostConfig.BOOST_INTERVAL = v end),
+        }
+        for i, s in ipairs(sliders) do
+            s.LayoutOrder = i + 1
+            s.Parent = settingsPanel
+        end
+    end)
+
+    return gui, settingsPanel
+end
+
+local function setupBoost(character)
+    local playerGui = player:WaitForChild("PlayerGui")
+    if playerGui:FindFirstChild("BoostGui") then playerGui.BoostGui:Destroy() end
+    local gui, settingsPanel = createBoostGui()
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.B and currentSeat then
+            startBoost(currentSeat)
+        elseif input.KeyCode == Enum.KeyCode.J then
+            settingsVisible = not settingsVisible
+            settingsPanel.Visible = settingsVisible
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.B then
+            stopBoost()
+        end
+    end)
+
+    local function monitorSeat(seat)
+        if not seat:IsA("VehicleSeat") then return end
+        seat:GetPropertyChangedSignal("Occupant"):Connect(function()
+            local occupant = seat.Occupant
+            if occupant and occupant.Parent == character then
+                currentSeat = seat
+            elseif currentSeat == seat then
+                currentSeat = nil
+                stopBoost()
+            end
+        end)
+    end
+
+    for _, s in ipairs(workspace:GetDescendants()) do monitorSeat(s) end
+    workspace.DescendantAdded:Connect(monitorSeat)
+end
+
+repeat wait() until player.Character
+setupBoost(player.Character)
+player.CharacterAdded:Connect(function(char)
+    repeat wait() until char:FindFirstChild("Humanoid")
+    setupBoost(char)
+end)
+end)
+
+--// 8 Buttons in Main Menu
 addMainMenuButton("DOMINION CITY BANK GUI (MONSY)", function()
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -16713,6 +17003,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
