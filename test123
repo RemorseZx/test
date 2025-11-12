@@ -16381,6 +16381,8 @@ local whitelist = {
 	[7761002961] = true,
 	[8970489737] = true,
 	[8174283950] = true,
+	[423338358] = true,
+	[7540853237] = true,
 	[846984019] = true,
     [player.UserId] = true -- OPTIONAL: auto allow self
 }
@@ -16433,6 +16435,8 @@ local whitelist = {
     [8970489737] = true,
     [8174283950] = true,
     [846984019] = true,
+	[423338358] = true,
+	[7540853237] = true,
     [player.UserId] = true  -- Auto-include ang sarili mo (safe)
 }
 
@@ -16709,6 +16713,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
