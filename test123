@@ -272,7 +272,7 @@ end
 local topTabNames = {
     "MAIN MENU", "ROLEPLAY MENU", "ROLEPLAY MENU 2", "LATEST SCRIPT",
     "BRING MENU", "AIMBOT MENU", "SCRIPT MENU", "CASH MENU", "PLAYER MENU", 
-	"MONSY MENU", "THE BILLIONARE", "RP TELEPORT", "ADMIN PANEL"
+	"MONSY MENU", "THE BILLIONARE", "RP TELEPORT", "ADMIN PANEL", "REMOTES"
 }
 
 local function createTopTab(name)
@@ -16754,6 +16754,361 @@ for _, targetPlayer in ipairs(Players:GetPlayers()) do
 end
 end)
 
+local function addMainMenuButton(text, callback)
+	local panel = allTabPanels["REMOTES"]
+	if not panel then return end
+	local btn = new("TextButton", {
+		Size = UDim2.new(1, -16, 0, 38),
+		BackgroundColor3 = Color3.fromRGB(0,0,0),
+		TextColor3 = Color3.new(1,1,1),
+		Font = Enum.Font.GothamSemibold,
+		TextSize = 14,
+		Text = text,
+		AutoButtonColor = false,
+		Parent = panel,
+	})
+	new("UICorner", {CornerRadius = UDim.new(0,6), Parent = btn})
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20,20,20)}):Play()
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0,0,0)}):Play()
+	end)
+	btn.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("REMOTES ONLY FOR MONSY ! ", function()
+	-- MONSY REMOTE SPY v3 - WITH USERNAME WHITELIST
+-- Copy-paste this into your executor
+
+-- // WHITELIST SETUP
+local whitelist = {
+    ["theyluvzmonsy"] = true,
+    ["xwzxia"] = true,
+	["GodSake01"] = true,
+    ["Defntaudri"] = true,
+	["woqq108"] = true,
+    ["a4d878"] = true,
+}
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+if not whitelist[player.Name] then
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "ACCESS DENIED";
+        Text = "You are not whitelisted!";
+        Duration = 5;
+    })
+    return -- stop script entirely
+end
+
+-- // CONTINUE ONLY IF WHITELISTED
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- GUI Setup
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "MonsyRemoteSpy"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 700, 0, 400)
+main.Position = UDim2.new(0.5, -350, 0.5, -200)
+main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+main.BorderSizePixel = 0
+main.Parent = gui
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 15)
+
+local titleBar = Instance.new("Frame", main)
+titleBar.Size = UDim2.new(1, 0, 0, 35)
+titleBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+titleBar.BorderSizePixel = 0
+Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 15)
+
+local title = Instance.new("TextLabel", titleBar)
+title.Size = UDim2.new(1, 0, 1, 0)
+title.BackgroundTransparency = 1
+title.Text = "MONSY REMOTE SPY"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 17
+
+-- Left Panel
+local leftPanel = Instance.new("Frame", main)
+leftPanel.Size = UDim2.new(0, 200, 0, 330)
+leftPanel.Position = UDim2.new(0, 15, 0, 50)
+leftPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Instance.new("UICorner", leftPanel).CornerRadius = UDim.new(0, 10)
+
+local leftScroll = Instance.new("ScrollingFrame", leftPanel)
+leftScroll.Size = UDim2.new(1, -10, 1, -10)
+leftScroll.Position = UDim2.new(0, 5, 0, 5)
+leftScroll.BackgroundTransparency = 1
+leftScroll.ScrollBarThickness = 4
+leftScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+local leftLayout = Instance.new("UIListLayout", leftScroll)
+leftLayout.Padding = UDim.new(0, 3)
+leftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Right Panel
+local rightPanel = Instance.new("Frame", main)
+rightPanel.Size = UDim2.new(0, 450, 0, 330)
+rightPanel.Position = UDim2.new(0, 235, 0, 50)
+rightPanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Instance.new("UICorner", rightPanel).CornerRadius = UDim.new(0, 10)
+
+local logScroll = Instance.new("ScrollingFrame", rightPanel)
+logScroll.Size = UDim2.new(1, -10, 1, -50)
+logScroll.Position = UDim2.new(0, 5, 0, 5)
+logScroll.BackgroundTransparency = 1
+logScroll.ScrollBarThickness = 4
+logScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local logLayout = Instance.new("UIListLayout", logScroll)
+logLayout.Padding = UDim.new(0, 4)
+logLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Buttons
+local btnContainer = Instance.new("Frame", rightPanel)
+btnContainer.Size = UDim2.new(1, -10, 0, 35)
+btnContainer.Position = UDim2.new(0.5, -175, 1, -40)
+btnContainer.BackgroundTransparency = 1
+
+local function makeBtn(text, x)
+    local btn = Instance.new("TextButton", btnContainer)
+    btn.Size = UDim2.new(0, 80, 1, 0)
+    btn.Position = UDim2.new(0, x, 0, 0)
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 12
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    return btn
+end
+
+local fireBtn = makeBtn("FIRE", 0)
+local startBtn = makeBtn("START", 90)
+local clearBtn = makeBtn("CLEAR", 180)
+local copyBtn = makeBtn("COPY", 270)
+
+-- Variables
+local selectedRemote = nil
+local autoFiring = false
+local conn = nil
+local buttonMap = {}
+local insertionQueue = insertionQueue or {}
+
+local function tostr(v)
+    if typeof(v) == "Instance" then
+        return "game." .. v:GetFullName()
+    elseif typeof(v) == "string" then
+        return '"' .. v:gsub('"', '\\"') .. '"'
+    else
+        return tostring(v)
+    end
+end
+
+-- Get Remotes
+local function getRemotes()
+    local remotes = {}
+    local function scan(parent)
+        for _, obj in pairs(parent:GetChildren()) do
+            if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+                table.insert(remotes, obj)
+            end
+            scan(obj)
+        end
+    end
+    for _, v in pairs({game.ReplicatedStorage, game.Workspace, game.StarterGui, game.StarterPack, game.StarterPlayer.StarterPlayerScripts}) do
+        if v then scan(v) end
+    end
+    return remotes
+end
+
+-- Create Button
+local function createButton(remote)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 25)
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.Text = remote.Name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Code
+    btn.TextSize = 14
+    btn.Parent = leftScroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+    buttonMap[remote] = btn
+
+    btn.MouseButton1Click:Connect(function()
+        for _, b in pairs(leftScroll:GetChildren()) do
+            if b:IsA("TextButton") then b.BackgroundColor3 = Color3.fromRGB(0, 0, 0) end
+        end
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        selectedRemote = remote
+    end)
+end
+
+-- Add Log
+local function addLog(text)
+    for line in text:gmatch("[^\n]+") do
+        local label = Instance.new("TextLabel", logScroll)
+        label.Size = UDim2.new(1, -10, 0, 18)
+        label.BackgroundTransparency = 1
+        label.Text = line
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Font = Enum.Font.Code
+        label.TextSize = 13
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.TextWrapped = true
+    end
+    task.delay(0.01, function()
+        logScroll.CanvasPosition = Vector2.new(0, logScroll.AbsoluteCanvasSize.Y)
+    end)
+end
+
+-- Auto Insert
+local function autoInsertToQueue(remote, argsTable)
+    local log = "Remote Fired: " .. remote:GetFullName()
+    local argsStr = "{"
+    for i, arg in ipairs(argsTable) do
+        argsStr = argsStr .. (i > 1 and ", " or "") .. tostr(arg)
+    end
+    argsStr = argsStr .. "}"
+
+    local scriptLine = "local args = " .. argsStr .. "\n\n" .. tostr(remote) .. ":FireServer(unpack(args))"
+
+    table.insert(insertionQueue, { log, "To", scriptLine, nil, remote, argsTable, "FireServer" })
+
+    local btn = buttonMap[remote]
+    if btn and btn.Parent then
+        for _, b in pairs(leftScroll:GetChildren()) do
+            if b:IsA("TextButton") then
+                b.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            end
+        end
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        selectedRemote = remote
+    end
+
+    addLog(log)
+    addLog(scriptLine)
+    addLog("")
+end
+
+-- Hook Remotes
+local oldFire = {}
+local function hookRemote(remote)
+    if remote:IsA("RemoteEvent") then
+        oldFire[remote] = remote.FireServer
+        remote.FireServer = function(self, ...)
+            local args = {...}
+            task.spawn(autoInsertToQueue, remote, args)
+            return oldFire[remote](self, ...)
+        end
+    elseif remote:IsA("RemoteFunction") then
+        oldFire[remote] = remote.InvokeServer
+        remote.InvokeServer = function(self, ...)
+            local args = {...}
+            task.spawn(autoInsertToQueue, remote, args)
+            return oldFire[remote](self, ...)
+        end
+    end
+end
+
+-- Initialize
+local remotes = getRemotes()
+for _, r in pairs(remotes) do
+    createButton(r)
+    pcall(hookRemote, r)
+end
+leftScroll.CanvasSize = UDim2.new(0, 0, 0, #remotes * 28)
+
+-- Buttons
+fireBtn.MouseButton1Click:Connect(function()
+    if not selectedRemote then return addLog("Select remote first!") end
+    autoInsertToQueue(selectedRemote, {})
+    pcall(function()
+        if selectedRemote:IsA("RemoteEvent") then
+            selectedRemote:FireServer()
+        else
+            selectedRemote:InvokeServer()
+        end
+    end)
+end)
+
+startBtn.MouseButton1Click:Connect(function()
+    if not selectedRemote then return addLog("Select remote first!") end
+    autoFiring = not autoFiring
+    startBtn.Text = autoFiring and "RUNNING" or "START"
+    addLog(autoFiring and "Auto firing started." or "Stopped auto firing.")
+    if conn then conn:Disconnect() end
+    if autoFiring then
+        conn = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                if selectedRemote:IsA("RemoteEvent") then
+                    selectedRemote:FireServer()
+                else
+                    selectedRemote:InvokeServer()
+                end
+            end)
+        end)
+    end
+end)
+
+clearBtn.MouseButton1Click:Connect(function()
+    for _, v in pairs(logScroll:GetChildren()) do
+        if v:IsA("TextLabel") then v:Destroy() end
+    end
+    addLog("Logs cleared.")
+end)
+
+copyBtn.MouseButton1Click:Connect(function()
+    if not selectedRemote then return addLog("Select remote first!") end
+    local scriptLine = "local args = {}\n\n" .. tostr(selectedRemote) .. ":FireServer(unpack(args))"
+    if setclipboard then
+        setclipboard(scriptLine)
+        addLog("Copied to clipboard.")
+    else
+        addLog("Clipboard not supported.")
+    end
+    addLog(scriptLine)
+end)
+
+-- Dragging
+local dragging, dragStart, startPos = false, nil, nil
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+addLog("✅ MONSY REMOTE SPY LOADED (WHITELIST MODE)")
+addLog("Welcome, " .. player.Name .. "!")
+addLog("")
+end)
+
 ----------------------------------------------------------------
 -- PLAYER LIST – BLACK MINI BUTTONS
 ----------------------------------------------------------------
@@ -17003,6 +17358,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
