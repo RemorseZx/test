@@ -151,7 +151,7 @@ new("TextLabel", {
 	BackgroundTransparency = 1,
 	Position = UDim2.new(0, 0, 0, 194),
 	Size = UDim2.new(1, 0, 0, 20),
-	Text = "@Monsy West Loveu" .. player.Name,
+	Text = "@" .. player.Name,
 	Font = Enum.Font.Gotham,
 	TextSize = 13,
 	TextColor3 = Color3.fromRGB(180,180,180),
@@ -17358,6 +17358,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
