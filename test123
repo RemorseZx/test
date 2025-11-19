@@ -6416,69 +6416,105 @@ addMainMenuButton("BAGONG BARYO CONFISCATE GUI (MONSY)", function()
 	--// SERVICES
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
 
---// REMOTES
+--// REMOTE
 local SearchRemote = ReplicatedStorage:WaitForChild("Police"):WaitForChild("Search")
 
---// GUI
+--// MAIN GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "PoliceSearchGUI"
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 250, 0, 140)
-MainFrame.Position = UDim2.new(0.5, -125, 0.4, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.Active = true
-MainFrame.Draggable = true
-MainFrame.Parent = ScreenGui
+--// PLAYER LIST FRAME
+local ListFrame = Instance.new("Frame")
+ListFrame.Size = UDim2.new(0, 180, 0, 400)
+ListFrame.Position = UDim2.new(0, 10, 0.5, -200)
+ListFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ListFrame.BorderSizePixel = 0
+ListFrame.Parent = ScreenGui
 
-local UICorner = Instance.new("UICorner", MainFrame)
-UICorner.CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", ListFrame).CornerRadius = UDim.new(0, 12)
 
-local Title = Instance.new("TextLabel")
-Title.Text = "SEARCH"
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.BackgroundTransparency = 1
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.Parent = MainFrame
+local ListTitle = Instance.new("TextLabel")
+ListTitle.Text = "PLAYERS ONLINE"
+ListTitle.Font = Enum.Font.GothamBold
+ListTitle.TextSize = 16
+ListTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ListTitle.BackgroundTransparency = 1
+ListTitle.Size = UDim2.new(1, 0, 0, 35)
+ListTitle.Parent = ListFrame
 
-local TextBox = Instance.new("TextBox")
-TextBox.PlaceholderText = "Enter Player Name"
-TextBox.Font = Enum.Font.Gotham
-TextBox.Text = ""
-TextBox.TextColor3 = Color3.fromRGB(255,255,255)
-TextBox.PlaceholderColor3 = Color3.fromRGB(255,255,255)
-TextBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
-TextBox.Size = UDim2.new(1, -20, 0, 35)
-TextBox.Position = UDim2.new(0, 10, 0, 40)
-TextBox.Parent = MainFrame
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, -10, 1, -45)
+ScrollingFrame.Position = UDim2.new(0, 5, 0, 40)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.ScrollBarThickness = 6
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ScrollingFrame.Parent = ListFrame
 
-local TextBoxCorner = Instance.new("UICorner", TextBox)
-TextBoxCorner.CornerRadius = UDim.new(0, 8)
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Padding = UDim.new(0, 4)
+UIListLayout.Parent = ScrollingFrame
 
-local SearchButton = Instance.new("TextButton")
-SearchButton.Text = "SEARCH"
-SearchButton.Font = Enum.Font.GothamBold
-SearchButton.TextColor3 = Color3.fromRGB(255,255,255)
-SearchButton.TextSize = 16
-SearchButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
-SearchButton.Size = UDim2.new(1, -20, 0, 35)
-SearchButton.Position = UDim2.new(0, 10, 0, 85)
-SearchButton.Parent = MainFrame
+--// ADD PLAYER BUTTON
+local playerButtons = {}
 
-local ButtonCorner = Instance.new("UICorner", SearchButton)
-ButtonCorner.CornerRadius = UDim.new(0, 8)
+local function addPlayerToList(player)
+	if playerButtons[player] then return end
 
-SearchButton.MouseButton1Click:Connect(function()
-    local targetName = TextBox.Text
-    if targetName ~= "" then
-        local targetPlayer = Players:FindFirstChild(targetName)
-        if targetPlayer and targetPlayer.Character then
-            SearchRemote:FireServer(targetPlayer.Character)
-        end
-    end
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -10, 0, 35)
+	btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+	btn.Text = player.DisplayName .. " (@" .. player.Name .. ")"
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextXAlignment = Enum.TextXAlignment.Left
+	btn.Parent = ScrollingFrame
+
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingLeft = UDim.new(0, 10)
+	padding.Parent = btn
+
+	btn.MouseButton1Click:Connect(function()
+		if player.Character then
+			SearchRemote:FireServer(player.Character)
+		end
+	end)
+
+	playerButtons[player] = btn
+end
+
+local function removePlayerFromList(player)
+	if playerButtons[player] then
+		playerButtons[player]:Destroy()
+		playerButtons[player] = nil
+	end
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+	addPlayerToList(player)
+end
+
+Players.PlayerAdded:Connect(addPlayerToList)
+Players.PlayerRemoving:Connect(removePlayerFromList)
+
+print("MONSY")
+
+--// 🔥 KEYBIND: PRESS P TO SHOW/HIDE
+local open = true
+
+UIS.InputBegan:Connect(function(key, typing)
+	if typing then return end
+	if key.KeyCode == Enum.KeyCode.P then
+		open = not open
+		ListFrame.Visible = open
+	end
 end)
 end)
 
@@ -17362,6 +17398,7 @@ UserInputService.InputBegan:Connect(function(i, gp)
 		end
 	end
 end)
+
 
 
 
