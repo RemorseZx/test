@@ -174,7 +174,7 @@ local socialsText = new("TextLabel", {
 	BackgroundTransparency = 1,
 	Position = UDim2.new(0, 0, 0, 310), -- SAKTONG BINABA LANG
 	Size = UDim2.new(1, 0, 0, 120),
-	Text = "@theyluvmonsy\n\n@discord.gg/3ktg\n\n@iluvmonz tiktok\n\n@iluvmonz youtube",
+	Text = "@theyluvmonsy\n\n@https://discord.gg/ewhxdTTE\n\n@iluvmonz tiktok\n\n@iluvmonz youtube",
 	Font = Enum.Font.Gotham,
 	TextSize = 12,
 	TextColor3 = Color3.new(0,0,0),
@@ -17097,5 +17097,6 @@ end)
 
 -- Apply initial theme (ensures text colors are correct)
 applyTheme()
+
 
 
