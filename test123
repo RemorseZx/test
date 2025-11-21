@@ -7006,7 +7006,7 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
-addMainMenuButton("URBAN CITY REVAMPED CONFISCATE GUI", function()
+addMainMenuButton("URBAN CITY REVAMPED CONFISCATE GUI (MONSY) ", function()
 	local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
@@ -17097,4 +17097,5 @@ end)
 
 -- Apply initial theme (ensures text colors are correct)
 applyTheme()
+
 
