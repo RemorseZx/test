@@ -7006,6 +7006,103 @@ end)
 end)
 
 --// 8 Buttons in Main Menu
+addMainMenuButton("URBAN CITY REVAMPED CONFISCATE GUI", function()
+	local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "PoliceSearchGUI"
+
+local ListFrame = Instance.new("Frame")
+ListFrame.Size = UDim2.new(0, 180, 0, 400)
+ListFrame.Position = UDim2.new(0, 10, 0.5, -200)
+ListFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ListFrame.BorderSizePixel = 0
+ListFrame.Parent = ScreenGui
+
+Instance.new("UICorner", ListFrame).CornerRadius = UDim.new(0, 12)
+
+local ListTitle = Instance.new("TextLabel")
+ListTitle.Text = "PLAYERS ONLINE"
+ListTitle.Font = Enum.Font.GothamBold
+ListTitle.TextSize = 16
+ListTitle.TextColor3 = Color3.fromRGB(0, 0, 0)
+ListTitle.BackgroundTransparency = 1
+ListTitle.Size = UDim2.new(1, 0, 0, 35)
+ListTitle.Parent = ListFrame
+
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, -10, 1, -45)
+ScrollingFrame.Position = UDim2.new(0, 5, 0, 40)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.ScrollBarThickness = 6
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ScrollingFrame.Parent = ListFrame
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Padding = UDim.new(0, 4)
+UIListLayout.Parent = ScrollingFrame
+
+local playerButtons = {}
+
+local function addPlayerToList(player)
+	if playerButtons[player] then return end
+
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -10, 0, 35)
+	btn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	btn.Text = player.DisplayName .. " (@" .. player.Name .. ")"
+	btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextXAlignment = Enum.TextXAlignment.Left
+	btn.Parent = ScrollingFrame
+
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingLeft = UDim.new(0, 10)
+	padding.Parent = btn
+
+	btn.MouseButton1Click:Connect(function()
+		if player.Character then
+			local args = { player.Character }
+			ReplicatedStorage:WaitForChild("Police", 9e9):WaitForChild("Search", 9e9):FireServer(unpack(args))
+		end
+	end)
+
+	playerButtons[player] = btn
+end
+
+local function removePlayerFromList(player)
+	if playerButtons[player] then
+		playerButtons[player]:Destroy()
+		playerButtons[player] = nil
+	end
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+	addPlayerToList(player)
+end
+
+Players.PlayerAdded:Connect(addPlayerToList)
+Players.PlayerRemoving:Connect(removePlayerFromList)
+
+local open = true
+UIS.InputBegan:Connect(function(key, typing)
+	if typing then return end
+	if key.KeyCode == Enum.KeyCode.P then
+		open = not open
+		ListFrame.Visible = open
+	end
+end)
+end)
+
+--// 8 Buttons in Main Menu
 addMainMenuButton("DOMINION CITY BANK GUI (MONSY)", function()
     local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -17000,3 +17097,4 @@ end)
 
 -- Apply initial theme (ensures text colors are correct)
 applyTheme()
+
